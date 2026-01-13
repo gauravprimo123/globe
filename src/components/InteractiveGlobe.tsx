@@ -242,7 +242,7 @@ export function InteractiveGlobe({ countries, onCountryClick, showCountriesList 
         {
           lat: country.lat,
           lng: country.lng,
-          altitude: 2
+          altitude: isMobile ? 2.5 : 1.5
         },
         1000
       );
