@@ -1,3 +1,8 @@
+import * as THREE from 'three';
+if (typeof window !== 'undefined') {
+  (window as any).THREE = THREE;
+}
+
 
 import { createRoot } from "react-dom/client";
 

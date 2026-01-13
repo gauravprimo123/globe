@@ -26,7 +26,7 @@ const LanguageSelector = memo(() => {
             initial={{ opacity: 0, scale: 0 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.4, duration: 0.4, type: "spring" }}
-            className={`fixed bottom-6 left-6 z-10`}
+            className={`fixed bottom-6 left-6 z-[9999]`}
         >
             <div className="relative mx-[7px] my-0">
                 <motion.button
@@ -34,7 +34,7 @@ const LanguageSelector = memo(() => {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     // Removed overflow-hidden from here if you want the badge to sit perfectly on the edge
-                    className="relative w-12 h-12 z-10 rounded-full flex items-center justify-center cursor-pointer"
+                    className="relative w-12 h-12 z-[10000] rounded-full flex items-center justify-center cursor-pointer"
                     style={{
                         background: 'linear-gradient(135deg, rgba(26, 31, 58, 0.85), rgba(10, 14, 39, 0.85))',
                         border: '1.5px solid rgba(100, 150, 200, 0.4)',
@@ -46,10 +46,9 @@ const LanguageSelector = memo(() => {
 
                 {/* Moved Badge OUTSIDE the button to be on top of everything */}
                 <div
-                    className="absolute top-0 -right-1 w-5 h-5 rounded-full flex items-center justify-center text-xs"
+                    className="absolute top-0 -right-1 w-5 h-5 rounded-full flex items-center justify-center text-xs z-[10001]"
                     style={{
                         background: 'linear-gradient(135deg, rgba(26, 31, 58, 0.95), rgba(10, 14, 39, 0.95))',
-                        zIndex: 100, // Higher than button (10) and Dropdown
                         border: '1px solid rgba(100, 150, 200, 0.5)',
                         fontSize: '9px',
                         color: '#94a3b8',
@@ -68,7 +67,7 @@ const LanguageSelector = memo(() => {
                                 animate={{ opacity: 1, y: 0, scale: 1 }}
                                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
                                 transition={{ duration: 0.2 }}
-                                className="absolute bottom-full left-0 mb-2 w-52 rounded-lg overflow-hidden border backdrop-blur-xl"
+                                className="absolute bottom-full left-0 mb-2 w-52 rounded-lg overflow-hidden border backdrop-blur-xl z-[10000]"
                                 style={{
                                     background: 'linear-gradient(135deg, rgba(26, 31, 58, 0.98), rgba(10, 14, 39, 0.98))',
                                     borderColor: 'rgba(100, 150, 200, 0.5)',

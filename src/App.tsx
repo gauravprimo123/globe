@@ -1,19 +1,7 @@
-import { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-
-// icons
-import { Languages, List, ChevronDown, X, Globe, Users, Award } from 'lucide-react';
-
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { CountryData, InteractiveGlobe } from '@/components/InteractiveGlobe';
-import { ImageWithFallback } from '@/components/common/ImageWithFallback';
+import { useState, useEffect } from 'react';
 
 
 // Images
-import footerImage from '@/assets/footer-img.png';
-import globalProgramImage from "@/assets/globe-img.png";
-import { LANGUAGES } from './constants/languages';
 import Header from './components/common/Header';
 import Footer from './components/common/Footer';
 import MainGlobe from './Pages/main/MainGlobe';
@@ -114,41 +102,6 @@ export default function App() {
     window.addEventListener('resize', measureElements);
     return () => window.removeEventListener('resize', measureElements);
   }, []);
-
-  // // Close dropdown when clicking outside
-  // useEffect(() => {
-  //   const handleClickOutside = (event: MouseEvent) => {
-  //     if (languageDropdownRef.current && !languageDropdownRef.current.contains(event.target as Node)) {
-  //       setShowLanguageDropdown(false);
-  //     }
-  //   };
-
-  //   if (showLanguageDropdown) {
-  //     document.addEventListener('mousedown', handleClickOutside);
-  //   }
-
-  //   return () => {
-  //     document.removeEventListener('mousedown', handleClickOutside);
-  //   };
-  // }, [showLanguageDropdown]);
-
-  // // Prevent body scroll when language dropdown is open
-  // useEffect(() => {
-  //   if (showLanguageDropdown) {
-  //     // Save current scroll position
-  //     const scrollY = window.scrollY;
-  //     document.body.style.position = 'fixed';
-  //     document.body.style.top = `-${scrollY}px`;
-  //     document.body.style.width = '100%';
-  //   } else {
-  //     // Restore scroll position
-  //     const scrollY = document.body.style.top;
-  //     document.body.style.position = '';
-  //     document.body.style.top = '';
-  //     document.body.style.width = '';
-  //     window.scrollTo(0, parseInt(scrollY || '0') * -1);
-  //   }
-  // }, [showLanguageDropdown]);
 
   return (
     <div className="relative min-h-screen w-full bg-gradient-to-b from-[#0a0e27] via-[#1a1f3a] to-[#0d1b2a]">

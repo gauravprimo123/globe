@@ -1,4 +1,10 @@
-// / <reference types="vite/client" />
+/// <reference types="vite/client" />
+
+declare global {
+  interface Window {
+    THREE?: typeof import('three');
+  }
+}
 
 declare module "*.png" {
   const src: string;

@@ -1,75 +1,89 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 
-// Global singleton pattern to ensure Globe is only imported once across the entire app
-let globeComponentPromise: Promise<any> | null = null;
-let globeComponentCache: any = null;
-let isImporting = false;
+let globePromise: Promise<typeof import('react-globe.gl')['default']> | null = null;
+let globeCache: typeof import('react-globe.gl')['default'] | null = null;
+
+// Pre-initialize THREE in module scope to ensure it's available BEFORE any imports
+if (typeof window !== 'undefined' && !(window as any).THREE) {
+  import('three').then((ThreeModule) => {
+    const THREE = (ThreeModule as any).default || ThreeModule;
+    (window as any).THREE = THREE;
+    
+    // Ensure BufferAttribute is fully loaded
+    if (THREE.BufferAttribute) {
+      // Force initialization
+      new THREE.BufferAttribute(new Float32Array([0, 0, 0]), 3);
+    }
+  });
+}
 
 export function useGlobe() {
-  const [GlobeComponent, setGlobeComponent] = useState<any>(() => globeComponentCache);
-  const isMounted = useRef(true);
+  const [Globe, setGlobe] =
+    useState<typeof import('react-globe.gl')['default'] | null>(globeCache);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    isMounted.current = true;
+    let mounted = true;
 
-    // If already cached, use it immediately
-    if (globeComponentCache && !GlobeComponent) {
-      setGlobeComponent(globeComponentCache);
+    if (globeCache) {
+      setGlobe(globeCache);
       return;
     }
 
-    // If already have component, no need to do anything
-    if (GlobeComponent) {
-      return;
-    }
+    if (!globePromise) {
+      globePromise = (async () => {
+        try {
+          // CRITICAL: Import three FIRST and wait for it to be in module cache
+          const ThreeModule = await import('three');
+          const THREE = (ThreeModule as any).default || ThreeModule;
 
-    // If import is in progress, wait for it
-    if (globeComponentPromise && !isImporting) {
-      globeComponentPromise.then((component) => {
-        if (isMounted.current && component) {
-          setGlobeComponent(component);
+          // Ensure window.THREE is set
+          if (typeof window !== 'undefined') {
+            (window as any).THREE = THREE;
+          }
+
+          // Wait longer to ensure Three.js is fully processed by Vite/browser
+          await new Promise(resolve => setTimeout(resolve, 300));
+
+          // Verify THREE is available
+          if (!THREE.BufferAttribute) {
+            throw new Error('THREE.BufferAttribute not available');
+          }
+
+          console.log('[GlobeWrapper] Importing react-globe.gl...');
+          
+          // Import react-globe.gl - it should now reuse the cached Three.js module
+          const globeModule = await import('react-globe.gl');
+          globeCache = globeModule.default;
+          
+          console.log('[GlobeWrapper] react-globe.gl loaded successfully');
+          return globeModule.default;
+        } catch (e) {
+          globePromise = null;
+          console.error('[GlobeWrapper] Load error:', e);
+          
+          // Debug info
+          if (typeof window !== 'undefined') {
+            console.error('[GlobeWrapper] Debug:', {
+              hasWindowTHREE: !!(window as any).THREE,
+              hasBufferAttribute: !!(window as any).THREE?.BufferAttribute,
+              errorStack: (e as Error).stack
+            });
+          }
+          
+          throw e;
         }
-      }).catch((error) => {
-        console.error('Failed to load globe:', error);
-      });
-      return;
+      })();
     }
 
-    // Prevent multiple simultaneous imports
-    if (isImporting) {
-      return;
-    }
-
-    // Start new import only if not cached and not importing
-    if (!globeComponentCache && !globeComponentPromise) {
-      isImporting = true;
-      
-      globeComponentPromise = import('react-globe.gl')
-        .then((module) => {
-          globeComponentCache = module.default;
-          isImporting = false;
-          return module.default;
-        })
-        .catch((error) => {
-          console.error('Error loading globe component:', error);
-          isImporting = false;
-          globeComponentPromise = null;
-          throw error;
-        });
-
-      globeComponentPromise.then((component) => {
-        if (isMounted.current && component) {
-          setGlobeComponent(component);
-        }
-      }).catch((error) => {
-        console.error('Failed to load globe:', error);
-      });
-    }
+    globePromise
+      .then((G) => mounted && setGlobe(G))
+      .catch((e) => mounted && setError(e.message || 'Failed to load globe'));
 
     return () => {
-      isMounted.current = false;
+      mounted = false;
     };
-  }, [GlobeComponent]);
+  }, []);
 
-  return GlobeComponent;
+  return { GlobeComponent: Globe, loadError: error };
 }

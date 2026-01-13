@@ -1,8 +1,6 @@
-export interface Language {
-  code: string;
-  name: string;
-  flag: string;
-}
+import type { Language } from '@/types/language.types';
+
+export type { Language };
 
 export const LANGUAGES: Language[] = [
   { code: "EN", name: "English", flag: "🇬🇧" },

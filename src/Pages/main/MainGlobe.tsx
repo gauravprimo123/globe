@@ -1,19 +1,26 @@
-import { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { useState, useEffect } from 'react';
+import { motion } from 'motion/react';
+// @ts-ignore - AnimatePresence is available but types may not be up to date
+import { AnimatePresence } from 'motion/react';
 
 // icons
 import { Languages, List, ChevronDown, X, Globe, Users, Award } from 'lucide-react';
 
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CountryData, InteractiveGlobe } from '@/components/InteractiveGlobe';
+import { InteractiveGlobe } from '@/components/InteractiveGlobe';
 import { ImageWithFallback } from '@/components/common/ImageWithFallback';
+import type { CountryData } from '@/types/country.types';
 
 
 // Images
 import globalProgramImage from "@/assets/globe-img.png";
 import LanguageSelector from '@/components/common/LanguageSelector';
 import { COUNTRIES } from '@/constants/countries';
+import { useTranslatedCountries } from '@/hooks/useTranslatedCountries';
+import { useLanguage } from '@/context/LanguageContext';
+import { GLOBAL_PROGRAM_TRANSLATIONS } from '@/translations/globalProgram';
+import { COMMON_TRANSLATIONS } from '@/translations/commonTranslation';
 
 // Suppress Three.js multiple instances warning since we're using a singleton pattern
 const originalWarn = console.warn;
@@ -33,13 +40,23 @@ export default function MainGlobe() {
     const [isRotationPaused, setIsRotationPaused] = useState(false);
     const [isHoveringGlobe, setIsHoveringGlobe] = useState(false);
 
+    // Get translated countries based on current language
+    const translatedCountries = useTranslatedCountries(COUNTRIES);
+    const { language } = useLanguage();
+
+    // Get translated global program content
+    const globalProgramContent = GLOBAL_PROGRAM_TRANSLATIONS[language] || GLOBAL_PROGRAM_TRANSLATIONS.EN;
+
 
     useEffect(() => {
         let scrollAccumulator = 0;
 
         const handleWheel = (e: WheelEvent) => {
-            if (showHero && isHoveringGlobe) {
+            if (showHero) {
+                // Prevent page scrolling when hero is visible
                 e.preventDefault();
+                e.stopPropagation();
+                
                 scrollAccumulator += Math.abs(e.deltaY);
 
                 // Hide hero when accumulated scroll reaches 25px
@@ -58,29 +75,48 @@ export default function MainGlobe() {
         };
 
         const handleTouchMove = (e: TouchEvent) => {
-            if (showHero && isHoveringGlobe) {
+            if (showHero) {
+                // Prevent page scrolling when hero is visible
                 e.preventDefault();
+                e.stopPropagation();
+                
                 const touch = e.touches[0];
                 const delta = Math.abs(scrollAccumulator - touch.clientY);
 
                 if (delta > 25) {
                     setShowHero(false);
+                    scrollAccumulator = 0;
                 }
             }
         };
 
+        // Prevent body scroll when hero is visible
         if (showHero) {
+            // Prevent scrolling on document body
+            document.body.style.overflow = 'hidden';
+            document.documentElement.style.overflow = 'hidden';
+            
+            // Add scroll event listeners
             window.addEventListener('wheel', handleWheel, { passive: false });
             window.addEventListener('touchstart', handleTouchStart, { passive: false });
             window.addEventListener('touchmove', handleTouchMove, { passive: false });
+        } else {
+            // Re-enable scrolling when hero is hidden
+            document.body.style.overflow = '';
+            document.documentElement.style.overflow = '';
         }
 
         return () => {
+            // Cleanup: re-enable scrolling
+            document.body.style.overflow = '';
+            document.documentElement.style.overflow = '';
+            
+            // Remove event listeners
             window.removeEventListener('wheel', handleWheel);
             window.removeEventListener('touchstart', handleTouchStart);
             window.removeEventListener('touchmove', handleTouchMove);
         };
-    }, [showHero, isHoveringGlobe]);
+    }, [showHero]);
 
     // Measure header and footer heights after images load
     useEffect(() => {
@@ -118,6 +154,9 @@ export default function MainGlobe() {
         console.log('Country clicked:', country);
     };
 
+    console.log('COUNTRIES', COUNTRIES)
+
+
     return (
         <div className="relative min-h-screen w-full bg-gradient-to-b from-[#0a0e27] via-[#1a1f3a] to-[#0d1b2a]">
 
@@ -148,9 +187,8 @@ export default function MainGlobe() {
                         </motion.button>
                     )}
                 </AnimatePresence>
-
                 <InteractiveGlobe
-                    countries={COUNTRIES}
+                    countries={translatedCountries}
                     onCountryClick={handleCountryClick}
                     showCountriesList={showCountriesList}
                     onGlobalProgramClick={() => setShowGlobalProgram(true)}
@@ -254,14 +292,14 @@ export default function MainGlobe() {
                                 >
                                     <ChevronDown className="w-12 h-12 text-cyan-400" style={{ filter: 'drop-shadow(0 0 10px rgba(0, 217, 255, 0.8))' }} />
                                 </motion.div>
-                                <p className="text-white/60 text-sm">Scroll to explore</p>
+                                <p className="text-white/60 text-sm">{COMMON_TRANSLATIONS[language].scrollToExplore}</p>
                             </motion.div>
                         </div>
                     </motion.div>
                 )}
             </AnimatePresence>
 
-            {/* Global Program Popup Modal - Same design as country detail panel */}
+            {/* Global Program Popup Modal - Same design and animation as country detail panel */}
             <AnimatePresence>
                 {showGlobalProgram && (
                     <>
@@ -275,10 +313,11 @@ export default function MainGlobe() {
                             onClick={() => setShowGlobalProgram(false)}
                         />
 
-                        {/* Animated Global Program Detail Panel */}
+                        {/* Animated Global Program Detail Panel - Matching CountryDetailPanel animations */}
                         <motion.div
+                            key="global-program-panel"
                             initial={{
-                                position: 'fixed',
+                                position: 'fixed' as const,
                                 left: '50%',
                                 top: '50%',
                                 x: '-50%',
@@ -287,32 +326,46 @@ export default function MainGlobe() {
                                 scale: 0.85,
                             }}
                             animate={{
-                                position: 'fixed',
+                                position: 'fixed' as const,
                                 left: '50%',
                                 top: '50%',
                                 x: '-50%',
                                 y: '-50%',
                                 width: Math.min(480, window.innerWidth * 0.9),
-                                height: 'auto',
+                                height: 'auto' as const,
                                 opacity: 1,
                                 scale: 1,
                             }}
                             exit={{
+                                position: 'fixed' as const,
+                                left: '50%',
+                                top: '50%',
+                                x: '-50%',
+                                y: '-50%',
+                                width: Math.min(480, window.innerWidth * 0.9),
+                                height: 'auto' as const,
                                 opacity: 0,
-                                scale: 0.85,
+                                scale: 0.95,
+                                transition: {
+                                    duration: 0.6,
+                                    ease: [0.4, 0, 0.2, 1] as [number, number, number, number],
+                                },
                             }}
                             transition={{
                                 duration: 0.4,
-                                ease: [0.4, 0, 0.2, 1],
+                                ease: [0.4, 0, 0.2, 1] as [number, number, number, number],
                             }}
                             className="z-50"
-                            onClick={(e) => e.stopPropagation()}
+                            onClick={(e: any) => e.stopPropagation()}
                         >
                             <Card
-                                className="bg-gradient-to-br from-[#0a0e27]/98 to-[#1a1f3a]/98 border-2 text-white backdrop-blur-xl overflow-hidden shadow-2xl"
+                                className="bg-gradient-to-br from-[#0a0e27]/98 to-[#1a1f3a]/98 
+                                border-2 text-white backdrop-blur-xl overflow-y-scroll  shadow-2xl
+                                max-h-[90vh] flex flex-col"
                                 style={{
                                     borderColor: '#00d9ff',
-                                    boxShadow: `0 0 50px #00d9ff99, 0 0 100px #00d9ff55, 0 20px 60px rgba(0,0,0,0.8)`
+                                    boxShadow: `0 0 50px #00d9ff99, 0 0 100px #00d9ff55, 0 20px 60px rgba(0,0,0,0.8)`,
+                                    scrollbarColor: 'rgba(0, 217, 255, 0.5) rgba(26, 31, 58, 0.5)'
                                 }}
                             >
                                 {/* Header Image */}
@@ -362,7 +415,7 @@ export default function MainGlobe() {
                                                     fontWeight: 600
                                                 }}
                                             >
-                                                Global Program
+                                                {globalProgramContent.title}
                                             </h3>
                                         </div>
                                         <motion.button
@@ -386,7 +439,7 @@ export default function MainGlobe() {
                                         <div className="flex items-start gap-2 p-2 rounded-lg bg-white/10 backdrop-blur-sm border border-white/20">
                                             <Users className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: '#00d9ff' }} />
                                             <div className="flex-1 min-w-0">
-                                                <span className="opacity-90 text-xs block">Target Audience</span>
+                                                <span className="opacity-90 text-xs block">{globalProgramContent.targetAudience.label}</span>
                                                 <span
                                                     className="text-sm block"
                                                     style={{
@@ -395,7 +448,7 @@ export default function MainGlobe() {
                                                         fontWeight: 500
                                                     }}
                                                 >
-                                                    Endocrinologists, diabetologists, and other healthcare professionals involved in the management of patients with T2DM
+                                                    {globalProgramContent.targetAudience.content}
                                                 </span>
                                             </div>
                                         </div>
@@ -412,7 +465,7 @@ export default function MainGlobe() {
                                             <Languages className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: '#00d9ff' }} />
                                             <div className="flex-1 min-w-0">
                                                 <div className="mb-1">
-                                                    <span className="opacity-70 text-xs">Language: </span>
+                                                    <span className="opacity-70 text-xs">{globalProgramContent.language.label}: </span>
                                                     <span
                                                         className="text-sm"
                                                         style={{
@@ -421,11 +474,11 @@ export default function MainGlobe() {
                                                             fontWeight: 500
                                                         }}
                                                     >
-                                                        English
+                                                        {globalProgramContent.language.content}
                                                     </span>
                                                 </div>
                                                 <div>
-                                                    <span className="opacity-70 text-xs">Subtitles: </span>
+                                                    <span className="opacity-70 text-xs">{globalProgramContent.subtitles.label}: </span>
                                                     <span
                                                         className="text-sm"
                                                         style={{
@@ -434,7 +487,7 @@ export default function MainGlobe() {
                                                             fontWeight: 500
                                                         }}
                                                     >
-                                                        English, Arabic, Chinese, German, Italian, Japanese, Portuguese, and Spanish
+                                                        {globalProgramContent.subtitles.content}
                                                     </span>
                                                 </div>
                                             </div>
@@ -444,7 +497,7 @@ export default function MainGlobe() {
                                         <div className="flex items-start gap-2 p-2.5 rounded-lg bg-white/10 backdrop-blur-sm border border-white/20">
                                             <Users className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: '#00d9ff' }} />
                                             <div className="flex-1 min-w-0">
-                                                <span className="opacity-70 text-xs block mb-1">Program Chair</span>
+                                                <span className="opacity-70 text-xs block mb-1">{globalProgramContent.programChair.label}</span>
                                                 <div>
                                                     <span
                                                         className="text-sm block"
@@ -454,15 +507,13 @@ export default function MainGlobe() {
                                                             fontWeight: 500
                                                         }}
                                                     >
-                                                        Kevin M. Pantalone, DO, ECNU, FACE
+                                                        {globalProgramContent.programChair.name}
                                                     </span>
-                                                    <span className="opacity-60 text-xs block mt-0.5">Professor of Medicine, Cleveland Clinic Lerner College of Medicine</span>
-                                                    <span className="opacity-60 text-xs block">Director of Diabetes Initiatives</span>
-                                                    <span className="opacity-60 text-xs block">Staff Endocrinologist</span>
-                                                    <span className="opacity-60 text-xs block">Department of Endocrinology</span>
-                                                    <span className="opacity-60 text-xs block">Cleveland Clinic</span>
-                                                    <span className="opacity-60 text-xs block">Cleveland, Ohio</span>
-                                                    <span className="opacity-60 text-xs block">United States of America</span>
+                                                    {globalProgramContent.programChair.affiliations.map((affiliation, index) => (
+                                                        <span key={index} className="opacity-60 text-xs block mt-0.5">
+                                                            {affiliation}
+                                                        </span>
+                                                    ))}
                                                 </div>
                                             </div>
                                         </div>
@@ -471,7 +522,7 @@ export default function MainGlobe() {
                                         <div className="flex items-start gap-2 p-2.5 rounded-lg bg-white/10 backdrop-blur-sm border border-white/20">
                                             <Award className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: '#00d9ff' }} />
                                             <div className="flex-1 min-w-0">
-                                                <span className="opacity-70 text-xs block mb-1">Credits</span>
+                                                <span className="opacity-70 text-xs block mb-1">{globalProgramContent.credits.label}</span>
                                                 <span
                                                     className="text-sm block"
                                                     style={{
@@ -480,7 +531,7 @@ export default function MainGlobe() {
                                                         fontWeight: 500
                                                     }}
                                                 >
-                                                    0.5 AMA PRA Category 1 Credit™
+                                                    {globalProgramContent.credits.ama}
                                                 </span>
                                                 <span
                                                     className="text-sm block"
@@ -490,7 +541,7 @@ export default function MainGlobe() {
                                                         fontWeight: 500
                                                     }}
                                                 >
-                                                    0.5 ANCC contact hours
+                                                    {globalProgramContent.credits.ancc}
                                                 </span>
                                             </div>
                                         </div>
@@ -517,7 +568,7 @@ export default function MainGlobe() {
                                                     fontWeight: 600
                                                 }}
                                             >
-                                                Access Activity Page
+                                                {globalProgramContent.buttonText}
                                             </Button>
                                         </motion.div>
                                     </motion.div>

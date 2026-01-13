@@ -1,7 +1,7 @@
 // Dynamic country color system
 // Allows colors to be computed dynamically while maintaining backward compatibility
 
-import type { CountryData } from "@/constants/countries";
+import type { CountryData } from "@/types/country.types";
 
 /**
  * Default color palette for countries
@@ -128,7 +128,9 @@ export function getCountryColorWithAlpha(
 /**
  * Type for custom color function
  */
-export type CountryColorFunction = (country: CountryData) => string | null;
+import type { CountryColorFunction } from '@/types/utils.types';
+
+export type { CountryColorFunction };
 
 /**
  * Example custom color functions
