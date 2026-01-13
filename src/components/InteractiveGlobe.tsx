@@ -121,33 +121,38 @@ export function InteractiveGlobe({ countries, onCountryClick, showCountriesList 
   // Auto-rotate functionality for react-globe.gl
   useEffect(() => {
     if (!GlobeComponent || !globeGlRef.current) return;
-
-    // Stop rotation when a country is selected or when user pauses
-    const shouldAutoRotate = !selectedCountry && !isRotationPaused;
-
-    // Use a small delay to ensure globe is mounted
+  
     const timer = setTimeout(() => {
       try {
-        // react-globe.gl exposes controls through the ref
-        if (globeGlRef.current && globeGlRef.current.controls) {
-          const controls = globeGlRef.current.controls();
-          if (controls) {
-            controls.autoRotate = shouldAutoRotate;
-            controls.autoRotateSpeed = 0.8;
-            controls.enableDamping = true;
-            controls.dampingFactor = 0.05;
-            controls.rotateSpeed = 0.5;
-            // Disable default zoom - we'll handle it manually with Ctrl+scroll
-            controls.enableZoom = false;
-          }
-        }
+        const controls = globeGlRef.current?.controls?.();
+        if (!controls) return;
+  
+        const isTouchDevice =
+          'ontouchstart' in window || navigator.maxTouchPoints > 0;
+  
+        const shouldAutoRotate = !selectedCountry && !isRotationPaused;
+  
+        controls.autoRotate = shouldAutoRotate;
+        controls.autoRotateSpeed = 0.8;
+  
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+  
+        controls.rotateSpeed = 0.5;
+  
+        // ✅ Enable zoom ONLY on touch devices
+        controls.enableZoom = isTouchDevice;
+  
+        // Optional but recommended
+        controls.enablePan = false;
       } catch (error) {
-        console.warn('Error setting auto-rotate:', error);
+        console.warn('Error setting globe controls:', error);
       }
     }, 100);
-
+  
     return () => clearTimeout(timer);
-  }, [GlobeComponent, selectedCountry, isRotationPaused, polygonData]);
+  }, [GlobeComponent, selectedCountry, isRotationPaused]);
+  
 
   // Ctrl+scroll zoom functionality for react-globe.gl (desktop only)
   useEffect(() => {
@@ -297,12 +302,12 @@ export function InteractiveGlobe({ countries, onCountryClick, showCountriesList 
         className="relative flex-1 md:h-full min-w-0"
         animate={{
           width: showCountriesList ? (window.innerWidth >= 768 ? '70%' : '100%') : '100%',
-          
         }}
         transition={{ duration: 0.5, ease: "easeInOut" }}
         style={{
           maxWidth: '100%',
-          overflow: 'hidden'
+          overflow: 'hidden',
+          scrollbarColor: 'rgba(0, 217, 255, 0.5) rgba(26, 31, 58, 0.5)',
         }}
       >
 
