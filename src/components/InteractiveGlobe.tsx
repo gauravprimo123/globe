@@ -573,7 +573,8 @@ export function InteractiveGlobe({ countries, onCountryClick, showCountriesList 
               <div className="flex md:grid md:grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 overflow-x-auto md:overflow-x-visible md:overflow-y-auto pb-3 md:pb-0 flex-1 px-3 md:px-2 md:py-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] md:[scrollbar-width:thin]"
                 style={{
                   scrollbarColor: 'rgba(0, 217, 255, 0.5) rgba(26, 31, 58, 0.5)',
-                  overflow: window.innerWidth < 768 ? "hidden" : undefined,
+                  touchAction: 'pan-x pan-y',
+                  WebkitOverflowScrolling: 'touch',
                 }}
               >
                 {/* Global Program Card - First in the list */}
