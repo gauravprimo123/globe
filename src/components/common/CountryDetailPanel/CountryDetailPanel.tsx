@@ -250,16 +250,20 @@ export function CountryDetailPanel({
             >
               <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                 <Button
-                  onClick={onNextStep}
-                  disabled={isNextStepDisabled}
-                  className="w-full text-[#0a0e27] transition-all duration-300 shadow-lg py-4 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg"
+                  disabled={trackData.buttonText?.href === "#"}
+                  onClick={() => {
+                    if (trackData.buttonText?.href) {
+                      window.open(trackData.buttonText?.href, '_blank', 'noopener,noreferrer');
+                    }
+                  }}
+                  className="w-full text-[#0a0e27] cursor-pointer transition-all duration-300 shadow-lg py-4 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg"
                   style={{
                     backgroundColor: countryColor,
                     boxShadow: `0 4px 20px ${countryColor}40`,
                     fontWeight: 600,
                   }}
                 >
-                  {nextStepButtonText}
+                  {trackData.buttonText?.label}
                 </Button>
               </motion.div>
             </motion.div>

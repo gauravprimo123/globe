@@ -31,6 +31,10 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         ama: '0.5 AMA PRA Category 1 Credit™',
         ancc: '0.5 ANCC contact hours',
       },
+      buttonText: {
+        label: 'Coming soon',
+        href: '#'
+      },
     },
     ES: {
       language: { label: 'Idioma', value: 'Inglés' },
@@ -52,6 +56,10 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         label: 'Créditos',
         ama: '0.5 Crédito AMA PRA Categoría 1™',
         ancc: '0.5 horas de contacto ANCC',
+      },
+      buttonText: {
+        label: 'Próximamente',
+        href: '#'
       },
     },
     FR: {
@@ -75,6 +83,10 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         ama: '0.5 Crédit AMA PRA Catégorie 1™',
         ancc: '0.5 heures de contact ANCC',
       },
+      buttonText: {
+        label: 'Bientôt disponible',
+        href: '#'
+      },
     },
     DE: {
       language: { label: 'Sprache', value: 'Englisch' },
@@ -96,6 +108,10 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         label: 'Credits',
         ama: '0.5 AMA PRA Kategorie 1 Credit™',
         ancc: '0.5 ANCC Kontaktstunden',
+      },
+      buttonText: {
+        label: 'Demnächst',
+        href: '#'
       },
     },
     AR: {
@@ -119,6 +135,10 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         ama: '0.5 رصيد AMA PRA الفئة 1™',
         ancc: '0.5 ساعة اتصال ANCC',
       },
+      buttonText: {
+        label: 'قريباً',
+        href: '#'
+      },
     },
     ZH: {
       language: { label: '语言', value: '英语' },
@@ -140,6 +160,10 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         label: '学分',
         ama: '0.5 AMA PRA 1类学分™',
         ancc: '0.5 ANCC 联系小时',
+      },
+      buttonText: {
+        label: '即将推出',
+        href: '#'
       },
     },
     JA: {
@@ -163,6 +187,10 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         ama: '0.5 AMA PRA カテゴリー1単位™',
         ancc: '0.5 ANCC 連絡時間',
       },
+      buttonText: {
+        label: '近日公開',
+        href: '#'
+      },
     },
     PT: {
       language: { label: 'Idioma', value: 'Inglês' },
@@ -185,6 +213,10 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         ama: '0.5 Crédito AMA PRA Categoria 1™',
         ancc: '0.5 horas de contato ANCC',
       },
+      buttonText: {
+        label: 'Em breve',
+        href: '#'
+      },
     },
   },
   germany: {
@@ -197,6 +229,10 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         ama: '0.5 AMA PRA Category 1 Credit™',
         ancc: '0.5 ANCC contact hours',
       },
+      buttonText: {
+        label: 'Coming soon',
+        href: '#'
+      },
     },
     ES: {
       language: { label: 'Idioma', value: 'Alemán' },
@@ -206,6 +242,10 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         label: 'Créditos',
         ama: '0.5 Crédito AMA PRA Categoría 1™',
         ancc: '0.5 horas de contacto ANCC',
+      },
+      buttonText: {
+        label: 'Próximamente',
+        href: '#'
       },
     },
     FR: {
@@ -217,6 +257,10 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         ama: '0.5 Crédit AMA PRA Catégorie 1™',
         ancc: '0.5 heures de contact ANCC',
       },
+      buttonText: {
+        label: 'Bientôt disponible',
+        href: '#'
+      },
     },
     DE: {
       language: { label: 'Sprache', value: 'Deutsch' },
@@ -226,6 +270,10 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         label: 'Credits',
         ama: '0.5 AMA PRA Kategorie 1 Credit™',
         ancc: '0.5 ANCC Kontaktstunden',
+      },
+      buttonText: {
+        label: 'Demnächst',
+        href: '#'
       },
     },
     AR: {
@@ -237,6 +285,10 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         ama: '0.5 رصيد AMA PRA الفئة 1™',
         ancc: '0.5 ساعة اتصال ANCC',
       },
+      buttonText: {
+        label: 'قريباً',
+        href: '#'
+      },
     },
     ZH: {
       language: { label: '语言', value: '德语' },
@@ -246,6 +298,10 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         label: '学分',
         ama: '0.5 AMA PRA 1类学分™',
         ancc: '0.5 ANCC 联系小时',
+      },
+      buttonText: {
+        label: '即将推出',
+        href: '#'
       },
     },
     JA: {
@@ -257,6 +313,10 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         ama: '0.5 AMA PRA カテゴリー1単位™',
         ancc: '0.5 ANCC 連絡時間',
       },
+      buttonText: {
+        label: '近日公開',
+        href: '#'
+      },
     },
     PT: {
       language: { label: 'Idioma', value: 'Alemão' },
@@ -266,6 +326,10 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         label: 'Créditos',
         ama: '0.5 Crédito AMA PRA Categoria 1™',
         ancc: '0.5 horas de contato ANCC',
+      },
+      buttonText: {
+        label: 'Em breve',
+        href: '#'
       },
     },
   },
@@ -288,6 +352,10 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         ama: '0.5 AMA PRA Category 1 Credit™',
         ancc: '0.5 ANCC contact hours',
       },
+      buttonText: {
+        label: 'Coming soon',
+        href: '#'
+      },
     },
     ES: {
       language: { label: 'Idioma', value: 'Italiano' },
@@ -306,6 +374,10 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         label: 'Créditos',
         ama: '0.5 Crédito AMA PRA Categoría 1™',
         ancc: '0.5 horas de contacto ANCC',
+      },
+      buttonText: {
+        label: 'Próximamente',
+        href: '#'
       },
     },
     FR: {
@@ -326,6 +398,10 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         ama: '0.5 Crédit AMA PRA Catégorie 1™',
         ancc: '0.5 heures de contact ANCC',
       },
+      buttonText: {
+        label: 'Bientôt disponible',
+        href: '#'
+      },
     },
     DE: {
       language: { label: 'Sprache', value: 'Italienisch' },
@@ -344,6 +420,10 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         label: 'Credits',
         ama: '0.5 AMA PRA Kategorie 1 Credit™',
         ancc: '0.5 ANCC Kontaktstunden',
+      },
+      buttonText: {
+        label: 'Demnächst',
+        href: '#'
       },
     },
     AR: {
@@ -364,6 +444,10 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         ama: '0.5 رصيد AMA PRA الفئة 1™',
         ancc: '0.5 ساعة اتصال ANCC',
       },
+      buttonText: {
+        label: 'قريباً',
+        href: '#'
+      },
     },
     ZH: {
       language: { label: '语言', value: '意大利语' },
@@ -382,6 +466,10 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         label: '学分',
         ama: '0.5 AMA PRA 1类学分™',
         ancc: '0.5 ANCC 联系小时',
+      },
+      buttonText: {
+        label: '即将推出',
+        href: '#'
       },
     },
     JA: {
@@ -402,6 +490,10 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         ama: '0.5 AMA PRA カテゴリー1単位™',
         ancc: '0.5 ANCC 連絡時間',
       },
+      buttonText: {
+        label: '近日公開',
+        href: '#'
+      },
     },
     PT: {
       language: { label: 'Idioma', value: 'Italiano' },
@@ -420,6 +512,10 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         label: 'Créditos',
         ama: '0.5 Crédito AMA PRA Categoria 1™',
         ancc: '0.5 horas de contato ANCC',
+      },
+      buttonText: {
+        label: 'Em breve',
+        href: '#'
       },
     },
   },
@@ -441,6 +537,10 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         ama: '0.5 AMA PRA Category 1 Credit™',
         ancc: '0.5 ANCC contact hours',
       },
+      buttonText: {
+        label: 'Coming Soon',
+        href: "#"
+      }
     },
     ES: {
       language: { label: 'Idioma', value: 'Español' },
@@ -458,6 +558,10 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         label: 'Créditos',
         ama: '0.5 Crédito AMA PRA Categoría 1™',
         ancc: '0.5 horas de contacto ANCC',
+      },
+      buttonText: {
+        label: 'Coming Soon',
+        href: "https://www.google.com"
       },
     },
     FR: {
@@ -477,6 +581,10 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         ama: '0.5 Crédit AMA PRA Catégorie 1™',
         ancc: '0.5 heures de contact ANCC',
       },
+      buttonText: {
+        label: 'Coming Soon',
+        href: "https://www.google.com"
+      },
     },
     DE: {
       language: { label: 'Sprache', value: 'Spanisch' },
@@ -494,6 +602,10 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         label: 'Credits',
         ama: '0.5 AMA PRA Kategorie 1 Credit™',
         ancc: '0.5 ANCC Kontaktstunden',
+      },
+      buttonText: {
+        label: 'Coming Soon',
+        href: "https://www.google.com"
       },
     },
     AR: {
@@ -513,6 +625,10 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         ama: '0.5 رصيد AMA PRA الفئة 1™',
         ancc: '0.5 ساعة اتصال ANCC',
       },
+      buttonText: {
+        label: 'Coming Soon',
+        href: "https://www.google.com"
+      },
     },
     ZH: {
       language: { label: '语言', value: '西班牙语' },
@@ -530,6 +646,10 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         label: '学分',
         ama: '0.5 AMA PRA 1类学分™',
         ancc: '0.5 ANCC 联系小时',
+      },
+      buttonText: {
+        label: 'Coming Soon',
+        href: "https://www.google.com"
       },
     },
     JA: {
@@ -549,6 +669,10 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         ama: '0.5 AMA PRA カテゴリー1単位™',
         ancc: '0.5 ANCC 連絡時間',
       },
+      buttonText: {
+        label: 'Coming Soon',
+        href: "https://www.google.com"
+      },
     },
     PT: {
       language: { label: 'Idioma', value: 'Espanhol' },
@@ -567,6 +691,10 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         ama: '0.5 Crédito AMA PRA Categoria 1™',
         ancc: '0.5 horas de contato ANCC',
       },
+      buttonText: {
+        label: 'Coming Soon',
+        href: "https://www.google.com"
+      },
     },
   },
   china: {
@@ -579,6 +707,10 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         ama: '0.5 AMA PRA Category 1 Credit™',
         ancc: '0.5 ANCC contact hours',
       },
+      buttonText: {
+        label: 'Coming soon',
+        href: '#'
+      },
     },
     ES: {
       language: { label: 'Idioma', value: 'Próximamente' },
@@ -588,6 +720,10 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         label: 'Créditos',
         ama: '0.5 Crédito AMA PRA Categoría 1™',
         ancc: '0.5 horas de contacto ANCC',
+      },
+      buttonText: {
+        label: 'Próximamente',
+        href: '#'
       },
     },
     FR: {
@@ -599,6 +735,10 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         ama: '0.5 Crédit AMA PRA Catégorie 1™',
         ancc: '0.5 heures de contact ANCC',
       },
+      buttonText: {
+        label: 'Bientôt disponible',
+        href: '#'
+      },
     },
     DE: {
       language: { label: 'Sprache', value: 'Demnächst' },
@@ -608,6 +748,10 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         label: 'Credits',
         ama: '0.5 AMA PRA Kategorie 1 Credit™',
         ancc: '0.5 ANCC Kontaktstunden',
+      },
+      buttonText: {
+        label: 'Demnächst',
+        href: '#'
       },
     },
     AR: {
@@ -619,6 +763,10 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         ama: '0.5 رصيد AMA PRA الفئة 1™',
         ancc: '0.5 ساعة اتصال ANCC',
       },
+      buttonText: {
+        label: 'قريباً',
+        href: '#'
+      },
     },
     ZH: {
       language: { label: '语言', value: '即将推出' },
@@ -628,6 +776,10 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         label: '学分',
         ama: '0.5 AMA PRA 1类学分™',
         ancc: '0.5 ANCC 联系小时',
+      },
+      buttonText: {
+        label: '即将推出',
+        href: '#'
       },
     },
     JA: {
@@ -639,6 +791,10 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         ama: '0.5 AMA PRA カテゴリー1単位™',
         ancc: '0.5 ANCC 連絡時間',
       },
+      buttonText: {
+        label: '近日公開',
+        href: '#'
+      },
     },
     PT: {
       language: { label: 'Idioma', value: 'Em breve' },
@@ -648,6 +804,10 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         label: 'Créditos',
         ama: '0.5 Crédito AMA PRA Categoria 1™',
         ancc: '0.5 horas de contato ANCC',
+      },
+      buttonText: {
+        label: 'Em breve',
+        href: '#'
       },
     },
   },
@@ -669,6 +829,10 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         ama: '0.5 AMA PRA Category 1 Credit™',
         ancc: '0.5 ANCC contact hours',
       },
+      buttonText: {
+        label: 'Coming soon',
+        href: '#'
+      },
     },
     ES: {
       language: { label: 'Idioma', value: 'Inglés' },
@@ -686,6 +850,10 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         label: 'Créditos',
         ama: '0.5 Crédito AMA PRA Categoría 1™',
         ancc: '0.5 horas de contacto ANCC',
+      },
+      buttonText: {
+        label: 'Próximamente',
+        href: '#'
       },
     },
     FR: {
@@ -705,6 +873,10 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         ama: '0.5 Crédit AMA PRA Catégorie 1™',
         ancc: '0.5 heures de contact ANCC',
       },
+      buttonText: {
+        label: 'Bientôt disponible',
+        href: '#'
+      },
     },
     DE: {
       language: { label: 'Sprache', value: 'Englisch' },
@@ -722,6 +894,10 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         label: 'Credits',
         ama: '0.5 AMA PRA Kategorie 1 Credit™',
         ancc: '0.5 ANCC Kontaktstunden',
+      },
+      buttonText: {
+        label: 'Demnächst',
+        href: '#'
       },
     },
     AR: {
@@ -741,6 +917,10 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         ama: '0.5 رصيد AMA PRA الفئة 1™',
         ancc: '0.5 ساعة اتصال ANCC',
       },
+      buttonText: {
+        label: 'قريباً',
+        href: '#'
+      },
     },
     ZH: {
       language: { label: '语言', value: '英语' },
@@ -758,6 +938,10 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         label: '学分',
         ama: '0.5 AMA PRA 1类学分™',
         ancc: '0.5 ANCC 联系小时',
+      },
+      buttonText: {
+        label: '即将推出',
+        href: '#'
       },
     },
     JA: {
@@ -777,6 +961,10 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         ama: '0.5 AMA PRA カテゴリー1単位™',
         ancc: '0.5 ANCC 連絡時間',
       },
+      buttonText: {
+        label: '近日公開',
+        href: '#'
+      },
     },
     PT: {
       language: { label: 'Idioma', value: 'Inglês' },
@@ -795,6 +983,10 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         ama: '0.5 Crédito AMA PRA Categoria 1™',
         ancc: '0.5 horas de contato ANCC',
       },
+      buttonText: {
+        label: 'Em breve',
+        href: '#'
+      },
     },
   },
   brazil: {
@@ -807,6 +999,10 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         ama: '0.5 AMA PRA Category 1 Credit™',
         ancc: '0.5 ANCC contact hours',
       },
+      buttonText: {
+        label: 'Coming soon',
+        href: '#'
+      },
     },
     ES: {
       language: { label: 'Idioma', value: 'Portugués' },
@@ -816,6 +1012,10 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         label: 'Créditos',
         ama: '0.5 Crédito AMA PRA Categoría 1™',
         ancc: '0.5 horas de contacto ANCC',
+      },
+      buttonText: {
+        label: 'Próximamente',
+        href: '#'
       },
     },
     FR: {
@@ -827,6 +1027,10 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         ama: '0.5 Crédit AMA PRA Catégorie 1™',
         ancc: '0.5 heures de contact ANCC',
       },
+      buttonText: {
+        label: 'Bientôt disponible',
+        href: '#'
+      },
     },
     DE: {
       language: { label: 'Sprache', value: 'Demnächst' },
@@ -836,6 +1040,10 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         label: 'Credits',
         ama: '0.5 AMA PRA Kategorie 1 Credit™',
         ancc: '0.5 ANCC Kontaktstunden',
+      },
+      buttonText: {
+        label: 'Demnächst',
+        href: '#'
       },
     },
     AR: {
@@ -847,6 +1055,10 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         ama: '0.5 رصيد AMA PRA الفئة 1™',
         ancc: '0.5 ساعة اتصال ANCC',
       },
+      buttonText: {
+        label: 'قريباً',
+        href: '#'
+      },
     },
     ZH: {
       language: { label: '语言', value: '即将推出' },
@@ -856,6 +1068,10 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         label: '学分',
         ama: '0.5 AMA PRA 1类学分™',
         ancc: '0.5 ANCC 联系小时',
+      },
+      buttonText: {
+        label: '即将推出',
+        href: '#'
       },
     },
     JA: {
@@ -867,6 +1083,10 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         ama: '0.5 AMA PRA カテゴリー1単位™',
         ancc: '0.5 ANCC 連絡時間',
       },
+      buttonText: {
+        label: '近日公開',
+        href: '#'
+      },
     },
     PT: {
       language: { label: 'Idioma', value: 'Em breve' },
@@ -877,12 +1097,16 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         ama: '0.5 Crédito AMA PRA Categoria 1™',
         ancc: '0.5 horas de contato ANCC',
       },
+      buttonText: {
+        label: 'Em breve',
+        href: '#'
+      },
     },
   },
   saudi: {
     EN: {
       language: { label: 'Language', value: 'English' },
-      subtitles: { label: 'Subtitles', value: 'Arabic' },
+      subtitles: { label: 'Subtitles', value: 'English, Arabic' },
       programChair: {
         label: 'Program Chair',
         name: 'Nasreen Alfaris, MD, MPH',
@@ -899,10 +1123,14 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         ama: '0.5 AMA PRA Category 1 Credit™',
         ancc: '0.5 ANCC contact hours',
       },
+      buttonText: {
+        label: 'Access Activity Page',
+        href: 'https://www.medlearninggroup.com/cme-programming/beyond-borders-bridging-gaps-in-the-management-of-type-2-diabetes-across-the-globe-saudi-arabia-uae/'
+      },
     },
     ES: {
       language: { label: 'Idioma', value: 'Inglés' },
-      subtitles: { label: 'Subtítulos', value: 'Árabe' },
+      subtitles: { label: 'Subtítulos', value: 'Inglés, Árabe' },
       programChair: {
         label: 'Director del Programa',
         name: 'Nasreen Alfaris, MD, MPH',
@@ -919,10 +1147,14 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         ama: '0.5 Crédito AMA PRA Categoría 1™',
         ancc: '0.5 horas de contacto ANCC',
       },
+      buttonText: {
+        label: 'Acceder a la Página de Actividad',
+        href: 'https://www.medlearninggroup.com/cme-programming/beyond-borders-bridging-gaps-in-the-management-of-type-2-diabetes-across-the-globe-saudi-arabia-uae/'
+      },
     },
     FR: {
       language: { label: 'Langue', value: 'Anglais' },
-      subtitles: { label: 'Sous-titres', value: 'Arabe' },
+      subtitles: { label: 'Sous-titres', value: 'Anglais, Arabe' },
       programChair: {
         label: 'Directeur du Programme',
         name: 'Nasreen Alfaris, MD, MPH',
@@ -939,10 +1171,14 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         ama: '0.5 Crédit AMA PRA Catégorie 1™',
         ancc: '0.5 heures de contact ANCC',
       },
+      buttonText: {
+        label: 'Accéder à la Page d\'Activité',
+        href: 'https://www.medlearninggroup.com/cme-programming/beyond-borders-bridging-gaps-in-the-management-of-type-2-diabetes-across-the-globe-saudi-arabia-uae/'
+      },
     },
     DE: {
       language: { label: 'Sprache', value: 'Englisch' },
-      subtitles: { label: 'Untertitel', value: 'Arabisch' },
+      subtitles: { label: 'Untertitel', value: 'Englisch, Arabisch' },
       programChair: {
         label: 'Programmleiter',
         name: 'Nasreen Alfaris, MD, MPH',
@@ -959,10 +1195,14 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         ama: '0.5 AMA PRA Kategorie 1 Credit™',
         ancc: '0.5 ANCC Kontaktstunden',
       },
+      buttonText: {
+        label: 'Auf Aktivitätsseite zugreifen',
+        href: 'https://www.medlearninggroup.com/cme-programming/beyond-borders-bridging-gaps-in-the-management-of-type-2-diabetes-across-the-globe-saudi-arabia-uae/'
+      },
     },
     AR: {
       language: { label: 'اللغة', value: 'الإنجليزية' },
-      subtitles: { label: 'الترجمة', value: 'العربية' },
+      subtitles: { label: 'الترجمة', value: 'الإنجليزية، العربية' },
       programChair: {
         label: 'رئيس البرنامج',
         name: 'نسرين الفارس، دكتور في الطب، ماجستير في الصحة العامة',
@@ -979,10 +1219,14 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         ama: '0.5 رصيد AMA PRA الفئة 1™',
         ancc: '0.5 ساعة اتصال ANCC',
       },
+      buttonText: {
+        label: 'الوصول إلى صفحة النشاط',
+        href: 'https://www.medlearninggroup.com/cme-programming/beyond-borders-bridging-gaps-in-the-management-of-type-2-diabetes-across-the-globe-saudi-arabia-uae/'
+      },
     },
     ZH: {
       language: { label: '语言', value: '英语' },
-      subtitles: { label: '字幕', value: '阿拉伯语' },
+      subtitles: { label: '字幕', value: '英语、阿拉伯语' },
       programChair: {
         label: '项目主席',
         name: 'Nasreen Alfaris, MD, MPH',
@@ -999,10 +1243,14 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         ama: '0.5 AMA PRA 1类学分™',
         ancc: '0.5 ANCC 联系小时',
       },
+      buttonText: {
+        label: '访问活动页面',
+        href: 'https://www.medlearninggroup.com/cme-programming/beyond-borders-bridging-gaps-in-the-management-of-type-2-diabetes-across-the-globe-saudi-arabia-uae/'
+      },
     },
     JA: {
       language: { label: '言語', value: '英語' },
-      subtitles: { label: '字幕', value: 'アラビア語' },
+      subtitles: { label: '字幕', value: '英語、アラビア語' },
       programChair: {
         label: 'プログラムチェア',
         name: 'Nasreen Alfaris, MD, MPH',
@@ -1019,10 +1267,14 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         ama: '0.5 AMA PRA カテゴリー1単位™',
         ancc: '0.5 ANCC 連絡時間',
       },
+      buttonText: {
+        label: 'アクティビティページにアクセス',
+        href: 'https://www.medlearninggroup.com/cme-programming/beyond-borders-bridging-gaps-in-the-management-of-type-2-diabetes-across-the-globe-saudi-arabia-uae/'
+      },
     },
     PT: {
       language: { label: 'Idioma', value: 'Inglês' },
-      subtitles: { label: 'Legendas', value: 'Árabe' },
+      subtitles: { label: 'Legendas', value: 'Inglês, Árabe' },
       programChair: {
         label: 'Diretor do Programa',
         name: 'Nasreen Alfaris, MD, MPH',
@@ -1038,13 +1290,17 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         label: 'Créditos',
         ama: '0.5 Crédito AMA PRA Categoria 1™',
         ancc: '0.5 horas de contato ANCC',
+      },
+      buttonText: {
+        label: 'Acessar Página de Atividade',
+        href: 'https://www.medlearninggroup.com/cme-programming/beyond-borders-bridging-gaps-in-the-management-of-type-2-diabetes-across-the-globe-saudi-arabia-uae/'
       },
     },
   },
   uae: {
     EN: {
       language: { label: 'Language', value: 'English' },
-      subtitles: { label: 'Subtitles', value: 'Arabic' },
+      subtitles: { label: 'Subtitles', value: 'English, Arabic' },
       programChair: {
         label: 'Program Chair',
         name: 'Nasreen Alfaris, MD, MPH',
@@ -1061,10 +1317,14 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         ama: '0.5 AMA PRA Category 1 Credit™',
         ancc: '0.5 ANCC contact hours',
       },
+      buttonText: {
+        label: 'Access Activity Page',
+        href: 'https://www.medlearninggroup.com/cme-programming/beyond-borders-bridging-gaps-in-the-management-of-type-2-diabetes-across-the-globe-saudi-arabia-uae/'
+      },
     },
     ES: {
       language: { label: 'Idioma', value: 'Inglés' },
-      subtitles: { label: 'Subtítulos', value: 'Árabe' },
+      subtitles: { label: 'Subtítulos', value: 'Inglés, Árabe' },
       programChair: {
         label: 'Director del Programa',
         name: 'Nasreen Alfaris, MD, MPH',
@@ -1081,10 +1341,14 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         ama: '0.5 Crédito AMA PRA Categoría 1™',
         ancc: '0.5 horas de contacto ANCC',
       },
+      buttonText: {
+        label: 'Acceder a la Página de Actividad',
+        href: 'https://www.medlearninggroup.com/cme-programming/beyond-borders-bridging-gaps-in-the-management-of-type-2-diabetes-across-the-globe-saudi-arabia-uae/'
+      },
     },
     FR: {
       language: { label: 'Langue', value: 'Anglais' },
-      subtitles: { label: 'Sous-titres', value: 'Arabe' },
+      subtitles: { label: 'Sous-titres', value: 'Anglais, Arabe' },
       programChair: {
         label: 'Directeur du Programme',
         name: 'Nasreen Alfaris, MD, MPH',
@@ -1101,10 +1365,14 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         ama: '0.5 Crédit AMA PRA Catégorie 1™',
         ancc: '0.5 heures de contact ANCC',
       },
+      buttonText: {
+        label: 'Accéder à la Page d\'Activité',
+        href: 'https://www.medlearninggroup.com/cme-programming/beyond-borders-bridging-gaps-in-the-management-of-type-2-diabetes-across-the-globe-saudi-arabia-uae/'
+      },
     },
     DE: {
       language: { label: 'Sprache', value: 'Englisch' },
-      subtitles: { label: 'Untertitel', value: 'Arabisch' },
+      subtitles: { label: 'Untertitel', value: 'Englisch, Arabisch' },
       programChair: {
         label: 'Programmleiter',
         name: 'Nasreen Alfaris, MD, MPH',
@@ -1121,10 +1389,14 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         ama: '0.5 AMA PRA Kategorie 1 Credit™',
         ancc: '0.5 ANCC Kontaktstunden',
       },
+      buttonText: {
+        label: 'Auf Aktivitätsseite zugreifen',
+        href: 'https://www.medlearninggroup.com/cme-programming/beyond-borders-bridging-gaps-in-the-management-of-type-2-diabetes-across-the-globe-saudi-arabia-uae/'
+      },
     },
     AR: {
       language: { label: 'اللغة', value: 'الإنجليزية' },
-      subtitles: { label: 'الترجمة', value: 'العربية' },
+      subtitles: { label: 'الترجمة', value: 'الإنجليزية، العربية' },
       programChair: {
         label: 'رئيس البرنامج',
         name: 'نسرين الفارس، دكتور في الطب، ماجستير في الصحة العامة',
@@ -1141,10 +1413,14 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         ama: '0.5 رصيد AMA PRA الفئة 1™',
         ancc: '0.5 ساعة اتصال ANCC',
       },
+      buttonText: {
+        label: 'الوصول إلى صفحة النشاط',
+        href: 'https://www.medlearninggroup.com/cme-programming/beyond-borders-bridging-gaps-in-the-management-of-type-2-diabetes-across-the-globe-saudi-arabia-uae/'
+      },
     },
     ZH: {
       language: { label: '语言', value: '英语' },
-      subtitles: { label: '字幕', value: '阿拉伯语' },
+      subtitles: { label: '字幕', value: '英语、阿拉伯语' },
       programChair: {
         label: '项目主席',
         name: 'Nasreen Alfaris, MD, MPH',
@@ -1161,10 +1437,14 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         ama: '0.5 AMA PRA 1类学分™',
         ancc: '0.5 ANCC 联系小时',
       },
+      buttonText: {
+        label: '访问活动页面',
+        href: 'https://www.medlearninggroup.com/cme-programming/beyond-borders-bridging-gaps-in-the-management-of-type-2-diabetes-across-the-globe-saudi-arabia-uae/'
+      },
     },
     JA: {
       language: { label: '言語', value: '英語' },
-      subtitles: { label: '字幕', value: 'アラビア語' },
+      subtitles: { label: '字幕', value: '英語、アラビア語' },
       programChair: {
         label: 'プログラムチェア',
         name: 'Nasreen Alfaris, MD, MPH',
@@ -1181,10 +1461,14 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         ama: '0.5 AMA PRA カテゴリー1単位™',
         ancc: '0.5 ANCC 連絡時間',
       },
+      buttonText: {
+        label: 'アクティビティページにアクセス',
+        href: 'https://www.medlearninggroup.com/cme-programming/beyond-borders-bridging-gaps-in-the-management-of-type-2-diabetes-across-the-globe-saudi-arabia-uae/'
+      },
     },
     PT: {
       language: { label: 'Idioma', value: 'Inglês' },
-      subtitles: { label: 'Legendas', value: 'Árabe' },
+      subtitles: { label: 'Legendas', value: 'Inglês, Árabe' },
       programChair: {
         label: 'Diretor do Programa',
         name: 'Nasreen Alfaris, MD, MPH',
@@ -1200,6 +1484,10 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         label: 'Créditos',
         ama: '0.5 Crédito AMA PRA Categoria 1™',
         ancc: '0.5 horas de contato ANCC',
+      },
+      buttonText: {
+        label: 'Acessar Página de Atividade',
+        href: 'https://www.medlearninggroup.com/cme-programming/beyond-borders-bridging-gaps-in-the-management-of-type-2-diabetes-across-the-globe-saudi-arabia-uae/'
       },
     },
   },

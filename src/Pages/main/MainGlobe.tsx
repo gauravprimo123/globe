@@ -56,7 +56,7 @@ export default function MainGlobe() {
                 // Prevent page scrolling when hero is visible
                 e.preventDefault();
                 e.stopPropagation();
-                
+
                 scrollAccumulator += Math.abs(e.deltaY);
 
                 // Hide hero when accumulated scroll reaches 25px
@@ -79,7 +79,7 @@ export default function MainGlobe() {
                 // Prevent page scrolling when hero is visible
                 e.preventDefault();
                 e.stopPropagation();
-                
+
                 const touch = e.touches[0];
                 const delta = Math.abs(scrollAccumulator - touch.clientY);
 
@@ -95,7 +95,7 @@ export default function MainGlobe() {
             // Prevent scrolling on document body
             document.body.style.overflow = 'hidden';
             document.documentElement.style.overflow = 'hidden';
-            
+
             // Add scroll event listeners
             window.addEventListener('wheel', handleWheel, { passive: false });
             window.addEventListener('touchstart', handleTouchStart, { passive: false });
@@ -110,7 +110,7 @@ export default function MainGlobe() {
             // Cleanup: re-enable scrolling
             document.body.style.overflow = '';
             document.documentElement.style.overflow = '';
-            
+
             // Remove event listeners
             window.removeEventListener('wheel', handleWheel);
             window.removeEventListener('touchstart', handleTouchStart);
@@ -154,39 +154,39 @@ export default function MainGlobe() {
         console.log('Country clicked:', country);
     };
 
-    console.log('COUNTRIES', COUNTRIES)
-
-
     return (
-        <div className="relative min-h-screen w-full bg-gradient-to-b from-[#0a0e27] via-[#1a1f3a] to-[#0d1b2a]">
+        <div className="relative h-[calc(100vh-100px)] w-full bg-gradient-to-b from-[#0a0e27] via-[#1a1f3a] to-[#0d1b2a]">
 
             {/* Language Selector Dropdown - Bottom Left above Global Program */}
             <LanguageSelector />
 
             {/* Globe Section - Natural height */}
-            <div className="relative w-full h-screen">
+            <div className="relative w-full h-full">
                 {/* Show Countries Button - appears when list is hidden, positioned exactly where the X button is */}
                 <AnimatePresence>
                     {!showCountriesList && (
-                        <motion.button
-                            initial={{ opacity: 0, x: 100 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: 100 }}
-                            transition={{ duration: 0.3, ease: "easeOut" }}
-                            onClick={() => setShowCountriesList(true)}
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            className="absolute top-3 md:top-6 right-3 md:right-6 z-50 p-3 rounded-full transition-all duration-300 hover:bg-white/20"
-                            style={{
-                                background: 'linear-gradient(135deg, rgba(26, 31, 58, 0.85), rgba(10, 14, 39, 0.85))',
-                                border: '2px solid rgba(0, 217, 255, 0.5)',
-                                boxShadow: '0 0 20px rgba(0, 217, 255, 0.3), 0 4px 15px rgba(0,0,0,0.5)'
-                            }}
-                        >
-                            <List className="w-6 h-6" style={{ color: '#00d9ff' }} />
-                        </motion.button>
+                        <div className="absolute cursor-pointer top-3 md:top-6 right-0 overflow-hidden z-50 h-fit w-fit p-3">
+                            <motion.button
+                                initial={{ opacity: 0, x: '100%' }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: '100%' }}
+                                transition={{ duration: 0.3, ease: 'easeOut' }}
+                                onClick={() => setShowCountriesList(true)}
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                className="p-3 rounded-full"
+                                style={{
+                                    background: 'linear-gradient(135deg, rgba(26, 31, 58, 0.85), rgba(10, 14, 39, 0.85))',
+                                    border: '2px solid rgba(0, 217, 255, 0.5)',
+                                    boxShadow: '0 0 20px rgba(0, 217, 255, 0.3), 0 4px 15px rgba(0,0,0,0.5)'
+                                }}
+                            >
+                                <List className="w-6 h-6" style={{ color: '#00d9ff' }} />
+                            </motion.button>
+                        </div>
                     )}
                 </AnimatePresence>
+
                 <InteractiveGlobe
                     countries={translatedCountries}
                     onCountryClick={handleCountryClick}

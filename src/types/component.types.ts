@@ -23,6 +23,10 @@ export interface TrackData {
     ama: string;
     ancc: string;
   };
+  buttonText?: {
+    label: string;
+    href: string;
+  };
 }
 
 export interface CardStartPosition {

@@ -1,4 +1,4 @@
-import { useRef, useState, useCallback, memo } from "react";
+import { useRef, useState, useCallback, memo, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { LANGUAGES } from "@/constants/languages";
 import { Languages } from "lucide-react";
@@ -18,6 +18,30 @@ const LanguageSelector = memo(() => {
     const toggleDropdown = useCallback(() => {
         setShowLanguageDropdown(prev => !prev);
     }, []);
+
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        if (!showLanguageDropdown) return;
+
+        const handleClickOutside = (event: MouseEvent) => {
+            if (
+                languageDropdownRef.current &&
+                !languageDropdownRef.current.contains(event.target as Node)
+            ) {
+                setShowLanguageDropdown(false);
+            }
+        };
+
+        // Add event listener with a small delay to avoid immediate closure
+        const timeoutId = setTimeout(() => {
+            document.addEventListener('mousedown', handleClickOutside);
+        }, 0);
+
+        return () => {
+            clearTimeout(timeoutId);
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [showLanguageDropdown]);
 
 
     return (

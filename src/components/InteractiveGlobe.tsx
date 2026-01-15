@@ -1,215 +1,281 @@
+// ============================================================================
+// External Dependencies
+// ============================================================================
 import { useEffect, useRef, useState, useMemo, useCallback } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import { X, Loader2 } from 'lucide-react';
+
+// ============================================================================
+// Internal Components
+// ============================================================================
 import { Card } from './ui/card';
-import { X, TrendingUp, Loader2, GraduationCap, Clock, List } from 'lucide-react';
 import { ImageWithFallback } from './common/ImageWithFallback';
 import { CountryDetailPanel } from './common/CountryDetailPanel';
-import { getCountryPolygons } from '../data/countryBoundaries';
-import { motion, AnimatePresence } from 'motion/react';
 import { useGlobe } from './GlobeWrapper';
-import globalProgramImage from "@/assets/globe-img.png";
+
+// ============================================================================
+// Hooks & Utilities
+// ============================================================================
 import { useTranslatedTrackData } from '@/hooks/useTranslatedCountries';
-import { GLOBAL_PROGRAM_TRANSLATIONS } from '@/translations/globalProgram';
-import { COMMON_TRANSLATIONS } from '@/translations/commonTranslation';
-import { useLanguage } from '@/context/LanguageContext';
 import {
   getTargetAudienceLabel,
   getCountryColorHelper,
   getCountryColorWithOpacityHelper,
   getCardStartPosition,
   isMobileDevice,
-  scrollToElement
+  scrollToElement,
 } from './InteractiveGlobe/helpers';
+
+// ============================================================================
+// Context
+// ============================================================================
+import { useLanguage } from '@/context/LanguageContext';
+
+// ============================================================================
+// Data & Constants
+// ============================================================================
+import { getCountryPolygons } from '../data/countryBoundaries';
+import { GLOBAL_PROGRAM_TRANSLATIONS } from '@/translations/globalProgram';
+import { COMMON_TRANSLATIONS } from '@/translations/commonTranslation';
+
+// ============================================================================
+// Assets
+// ============================================================================
+import globalProgramImage from '@/assets/globe-img.png';
+
+// ============================================================================
+// Types
+// ============================================================================
 import type { CountryData, PolygonFeature } from '@/types/country.types';
 import type { InteractiveGlobeProps } from '@/types/globe.types';
 import type { LanguageCode } from '@/types/language.types';
 
-// Re-export for backward compatibility
+// ============================================================================
+// Type Exports
+// ============================================================================
 export type { CountryData };
 
-export function InteractiveGlobe({ countries, onCountryClick, showCountriesList = true, onGlobalProgramClick, isRotationPaused = false, setIsRotationPaused, onToggleCountriesList, onMouseEnter, onMouseLeave, customColorFn }: InteractiveGlobeProps) {
-  const globeGlRef = useRef<any>(null); // Ref for react-globe.gl component
+// ============================================================================
+// Constants
+// ============================================================================
+const DESKTOP_BREAKPOINT = 1024;
+const TABLET_BREAKPOINT = 768;
+const MOBILE_SIDEBAR_HEIGHT = 220;
+const ZOOM_MIN_DISTANCE = 150;
+const ZOOM_MAX_DISTANCE = 800;
+const ZOOM_FACTOR_IN = 0.95;
+const ZOOM_FACTOR_OUT = 1.05;
+
+// ============================================================================
+// Component
+// ============================================================================
+export function InteractiveGlobe({
+  countries,
+  onCountryClick,
+  showCountriesList = true,
+  onGlobalProgramClick,
+  isRotationPaused = false,
+  setIsRotationPaused,
+  onToggleCountriesList,
+  onMouseEnter,
+  onMouseLeave,
+  customColorFn,
+}: InteractiveGlobeProps) {
+  // ============================================================================
+  // Refs
+  // ============================================================================
+  const globeGlRef = useRef<any>(null);
+  const cardRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+
+  // ============================================================================
+  // State - Globe & Country Selection
+  // ============================================================================
   const [selectedCountry, setSelectedCountry] = useState<CountryData | null>(null);
-  const [cardStartPosition, setCardStartPosition] = useState<{ x: number; y: number; width: number; height: number } | null>(null);
-  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [hoveredCountry, setHoveredCountry] = useState<CountryData | null>(null);
   const [polygonData, setPolygonData] = useState<PolygonFeature[]>([]);
-  const [isHoveringGlobe, setIsHoveringGlobe] = useState(false);
+  const [cardStartPosition, setCardStartPosition] = useState<{
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  } | null>(null);
+
+  // ============================================================================
+  // State - UI & Layout
+  // ============================================================================
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [isMobile, setIsMobile] = useState(false);
-  const { GlobeComponent, loadError } = useGlobe();
-  const cardRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+  const [isHoveringGlobe, setIsHoveringGlobe] = useState(false);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [sidebarWidth, setSidebarWidth] = useState<string>('0%');
 
+  // ============================================================================
+  // Hooks & Context
+  // ============================================================================
+  const { GlobeComponent, loadError } = useGlobe();
   const { language: languageCode } = useLanguage();
-
-  // Get translated track data based on current language
   const getTrackData = useTranslatedTrackData();
 
-  // Helper functions using extracted utilities
-  const getTargetAudienceLabelForCountry = useCallback((countryId: string): string => {
-    return getTargetAudienceLabel(countryId, languageCode);
-  }, [languageCode]);
+  // ============================================================================
+  // Helper Functions
+  // ============================================================================
+  const getTargetAudienceLabelForCountry = useCallback(
+    (countryId: string): string => {
+      return getTargetAudienceLabel(countryId, languageCode);
+    },
+    [languageCode]
+  );
 
-  const getColor = useCallback((country: CountryData | null | undefined): string => {
-    return getCountryColorHelper(country, customColorFn);
-  }, [customColorFn]);
+  const getColor = useCallback(
+    (country: CountryData | null | undefined): string => {
+      return getCountryColorHelper(country, customColorFn);
+    },
+    [customColorFn]
+  );
 
-  const getColorWithOpacity = useCallback((country: CountryData | null | undefined, opacity: number): string => {
-    return getCountryColorWithOpacityHelper(country, opacity, customColorFn);
-  }, [customColorFn]);
+  const getColorWithOpacity = useCallback(
+    (country: CountryData | null | undefined, opacity: number): string => {
+      return getCountryColorWithOpacityHelper(country, opacity, customColorFn);
+    },
+    [customColorFn]
+  );
 
-  // Memoize selected country color to avoid recalculating
   const selectedCountryColor = useMemo(() => {
     return getColor(selectedCountry);
   }, [selectedCountry, getColor]);
 
 
+  // ============================================================================
+  // Effects - Layout & Dimensions
+  // ============================================================================
   useEffect(() => {
-    // Set initial dimensions - responsive based on screen size and countries list visibility
     const updateDimensions = () => {
-      const mobile = window.innerWidth < 768;
-      setIsMobile(mobile);
-      // On mobile: subtract 220px for the bottom cards section if countries list is shown
-      const mobileGlobeHeight = (mobile && showCountriesList) ? window.innerHeight - 220 : window.innerHeight;
+      const isMobileDevice = window.innerWidth < TABLET_BREAKPOINT;
+      setIsMobile(isMobileDevice);
 
-      // On desktop: use full width if countries list is hidden, otherwise 70%
-      const desktopGlobeWidth = showCountriesList ? window.innerWidth * 0.7 : window.innerWidth;
+      const mobileGlobeHeight =
+        isMobileDevice && showCountriesList
+          ? window.innerHeight - MOBILE_SIDEBAR_HEIGHT
+          : window.innerHeight;
+
+      const desktopGlobeWidth = showCountriesList
+        ? window.innerWidth * 0.7
+        : window.innerWidth;
 
       const newDimensions = {
-        width: mobile ? window.innerWidth : desktopGlobeWidth,
-        height: mobile ? mobileGlobeHeight : window.innerHeight
+        width: isMobileDevice ? window.innerWidth : desktopGlobeWidth,
+        height: isMobileDevice ? mobileGlobeHeight : window.innerHeight,
       };
 
-      // Update sidebar width for animation
-      if (showCountriesList) {
-        setSidebarWidth(mobile ? '100%' : '30%');
-      } else {
-        setSidebarWidth('0%');
-      }
+      setSidebarWidth(
+        showCountriesList ? (isMobileDevice ? '100%' : '30%') : '0%'
+      );
 
-      console.log('[InteractiveGlobe] Dimensions updated:', newDimensions);
       setDimensions(newDimensions);
     };
 
     updateDimensions();
-
-    // Handle window resize
     window.addEventListener('resize', updateDimensions);
-    return () => window.removeEventListener('resize', updateDimensions);
+
+    return () => {
+      window.removeEventListener('resize', updateDimensions);
+    };
   }, [showCountriesList]);
 
   useEffect(() => {
-    // Load polygon data for countries
-    console.log('[InteractiveGlobe] Loading polygon data for countries:', countries.length);
-    const countryIds = countries.map(c => c.id);
+    const countryIds = countries.map((country) => country.id);
     const polygons = getCountryPolygons(countryIds);
-    console.log('[InteractiveGlobe] Loaded polygons:', polygons.length);
 
-    // Attach country data to each polygon
     const enrichedPolygons: PolygonFeature[] = polygons
-      .filter(polygon => polygon.properties && polygon.properties.id)
-      .map(polygon => ({
+      .filter(
+        (polygon) => polygon.properties && polygon.properties.id
+      )
+      .map((polygon) => ({
         ...polygon,
-        countryData: countries.find(c => c.id === polygon.properties?.id)
+        countryData: countries.find(
+          (country) => country.id === polygon.properties?.id
+        ),
       })) as PolygonFeature[];
 
-    console.log('[InteractiveGlobe] Enriched polygons:', enrichedPolygons.length);
     setPolygonData(enrichedPolygons);
-    console.log('[InteractiveGlobe] Polygon data loaded. Dimensions:', dimensions);
   }, [countries]);
 
-  // Auto-rotate functionality for react-globe.gl
+  // ============================================================================
+  // Effects - Globe Controls
+  // ============================================================================
   useEffect(() => {
     if (!GlobeComponent || !globeGlRef.current) return;
-  
+
     const timer = setTimeout(() => {
       try {
         const controls = globeGlRef.current?.controls?.();
         if (!controls) return;
-  
+
         const isTouchDevice =
           'ontouchstart' in window || navigator.maxTouchPoints > 0;
-  
         const shouldAutoRotate = !selectedCountry && !isRotationPaused;
-  
+
         controls.autoRotate = shouldAutoRotate;
         controls.autoRotateSpeed = 0.8;
-  
         controls.enableDamping = true;
         controls.dampingFactor = 0.05;
-  
         controls.rotateSpeed = 0.5;
-  
-        // ✅ Enable zoom ONLY on touch devices
         controls.enableZoom = isTouchDevice;
-  
-        // Optional but recommended
         controls.enablePan = false;
       } catch (error) {
         console.warn('Error setting globe controls:', error);
       }
     }, 100);
-  
+
     return () => clearTimeout(timer);
   }, [GlobeComponent, selectedCountry, isRotationPaused]);
-  
 
-  // Ctrl+scroll zoom functionality for react-globe.gl (desktop only)
   useEffect(() => {
     if (!GlobeComponent || !isHoveringGlobe) return;
 
-    // Only enable Ctrl+scroll zoom on desktop (>= 1024px)
-    // On tablet and mobile, users can use pinch-to-zoom
-    const isDesktop = window.innerWidth >= 1024;
+    const isDesktop = window.innerWidth >= DESKTOP_BREAKPOINT;
     if (!isDesktop) return;
 
     const handleWheel = (e: WheelEvent) => {
-      // Only zoom if Ctrl key (or Cmd on Mac) is pressed
-      if (e.ctrlKey || e.metaKey) {
-        e.preventDefault();
-        e.stopPropagation();
+      if (!(e.ctrlKey || e.metaKey)) return;
 
-        if (globeGlRef.current) {
-          try {
-            // react-globe.gl exposes camera through ref
-            if (globeGlRef.current.camera) {
-              const camera = globeGlRef.current.camera();
-              if (camera && camera.position) {
-                // Calculate zoom factor based on scroll direction
-                const zoomFactor = e.deltaY > 0 ? 1.05 : 0.95;
+      e.preventDefault();
+      e.stopPropagation();
 
-                // Apply zoom to camera position
-                camera.position.x *= zoomFactor;
-                camera.position.y *= zoomFactor;
-                camera.position.z *= zoomFactor;
+      if (!globeGlRef.current?.camera) return;
 
-                // Clamp zoom to reasonable limits
-                const distance = Math.sqrt(
-                  camera.position.x ** 2 +
-                  camera.position.y ** 2 +
-                  camera.position.z ** 2
-                );
+      try {
+        const camera = globeGlRef.current.camera();
+        if (!camera?.position) return;
 
-                const minDistance = 150;
-                const maxDistance = 800;
+        const zoomFactor = e.deltaY > 0 ? ZOOM_FACTOR_OUT : ZOOM_FACTOR_IN;
 
-                if (distance < minDistance || distance > maxDistance) {
-                  const clampedDistance = Math.max(minDistance, Math.min(maxDistance, distance));
-                  const scale = clampedDistance / distance;
-                  camera.position.x *= scale;
-                  camera.position.y *= scale;
-                  camera.position.z *= scale;
-                }
-              }
-            }
-          } catch (error) {
-            console.warn('Error zooming globe:', error);
-          }
+        camera.position.x *= zoomFactor;
+        camera.position.y *= zoomFactor;
+        camera.position.z *= zoomFactor;
+
+        const distance = Math.sqrt(
+          camera.position.x ** 2 +
+          camera.position.y ** 2 +
+          camera.position.z ** 2
+        );
+
+        if (distance < ZOOM_MIN_DISTANCE || distance > ZOOM_MAX_DISTANCE) {
+          const clampedDistance = Math.max(
+            ZOOM_MIN_DISTANCE,
+            Math.min(ZOOM_MAX_DISTANCE, distance)
+          );
+          const scale = clampedDistance / distance;
+
+          camera.position.x *= scale;
+          camera.position.y *= scale;
+          camera.position.z *= scale;
         }
+      } catch (error) {
+        console.warn('Error zooming globe:', error);
       }
     };
 
-    // Attach to window to capture all wheel events
     window.addEventListener('wheel', handleWheel, { passive: false });
 
     return () => {
@@ -217,100 +283,152 @@ export function InteractiveGlobe({ countries, onCountryClick, showCountriesList 
     };
   }, [GlobeComponent, isHoveringGlobe]);
 
-  const handlePolygonClick = (polygon: any, fromSidebar: boolean = false) => {
-    const country = polygon.countryData;
-    if (!country) return;
+  // ============================================================================
+  // Event Handlers
+  // ============================================================================
+  const handlePolygonClick = useCallback(
+    (polygon: any, fromSidebar: boolean = false) => {
+      const country = polygon.countryData;
+      if (!country) return;
 
-    // Get card position if clicked from sidebar
-    const cardElement = cardRefs.current[country.id];
-    if (fromSidebar && cardElement) {
-      const position = getCardStartPosition(cardElement);
-      setCardStartPosition(position);
-    } else {
-      // Reset position for globe clicks
-      setCardStartPosition(null);
-    }
+      const cardElement = cardRefs.current[country.id];
+      if (fromSidebar && cardElement) {
+        const position = getCardStartPosition(cardElement);
+        setCardStartPosition(position);
+      } else {
+        setCardStartPosition(null);
+      }
 
-    setSelectedCountry(country);
-    if (onCountryClick) {
-      onCountryClick(country);
-    }
+      setSelectedCountry(country);
+      onCountryClick?.(country);
 
-    // Animate camera to country using react-globe.gl API
-    if (globeGlRef.current && globeGlRef.current.pointOfView) {
-      globeGlRef.current.pointOfView(
-        {
-          lat: country.lat,
-          lng: country.lng,
-          altitude: isMobile ? 2.5 : 1.5
-        },
-        1000
-      );
-    }
+      if (globeGlRef.current?.pointOfView) {
+        globeGlRef.current.pointOfView(
+          {
+            lat: country.lat,
+            lng: country.lng,
+            altitude: isMobile ? 2.5 : 1.5,
+          },
+          1000
+        );
+      }
 
-    // Scroll to card on mobile
-    if (isMobileDevice() && cardRefs.current[country.id]) {
-      scrollToElement(cardRefs.current[country.id]);
-    }
-  };
+      if (isMobileDevice() && cardRefs.current[country.id]) {
+        scrollToElement(cardRefs.current[country.id]);
+      }
+    },
+    [isMobile, onCountryClick]
+  );
 
-  // Wrapper for react-globe.gl onPolygonClick signature
-  const handleGlobePolygonClick = (polygon: object, event: MouseEvent, coords: { lat: number; lng: number; altitude: number }) => {
-    // Extract countryData from polygon object
-    const polygonWithData = polygon as any;
-    if (polygonWithData && polygonWithData.countryData) {
-      handlePolygonClick(polygonWithData, false);
-    }
-  };
+  const handleGlobePolygonClick = useCallback(
+    (
+      polygon: object,
+      event: MouseEvent,
+      coords: { lat: number; lng: number; altitude: number }
+    ) => {
+      const polygonWithData = polygon as any;
+      if (polygonWithData?.countryData) {
+        handlePolygonClick(polygonWithData, false);
+      }
+    },
+    [handlePolygonClick]
+  );
 
-  // Wrapper for react-globe.gl onPolygonHover signature
-  const handleGlobePolygonHover = (polygon: object | null, prevPolygon: object | null) => {
-    const polygonWithData = polygon as any;
-    if (polygonWithData && polygonWithData.countryData) {
-      handlePolygonHover(polygonWithData);
-    } else {
-      handlePolygonHover(null);
-    }
-  };
+  const handleGlobePolygonHover = useCallback(
+    (polygon: object | null, prevPolygon: object | null) => {
+      const polygonWithData = polygon as any;
+      if (polygonWithData?.countryData) {
+        setHoveredCountry(polygonWithData.countryData);
+      } else {
+        setHoveredCountry(null);
+      }
+    },
+    []
+  );
 
-  const handleMouseMove = (e: any) => {
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
     setMousePos({ x: e.clientX, y: e.clientY });
-  };
+  }, []);
 
-  const handlePolygonHover = (polygon: any) => {
-    if (polygon && polygon.countryData) {
-      setHoveredCountry(polygon.countryData);
-    } else {
-      setHoveredCountry(null);
-    }
-  };
+  const handleGlobeClick = useCallback(
+    (e: React.MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'CANVAS' && setIsRotationPaused) {
+        setIsRotationPaused(!isRotationPaused);
+      }
+    },
+    [isRotationPaused, setIsRotationPaused]
+  );
 
-  //polygonsData={polygonData}
-  console.log('[InteractiveGlobe] polygonData:', polygonData);
+  const handleGlobeMouseEnter = useCallback(() => {
+    onMouseEnter?.();
+    setIsHoveringGlobe(true);
+  }, [onMouseEnter]);
 
-  const handleNextStep = () => {
+  const handleGlobeMouseLeave = useCallback(() => {
+    onMouseLeave?.();
+    setIsHoveringGlobe(false);
+  }, [onMouseLeave]);
+
+  const handleNextStep = useCallback(() => {
     if (selectedCountry) {
       alert(`Proceeding to next step for ${selectedCountry.name}`);
-      // You can replace this with actual navigation or modal
     }
-  };
+  }, [selectedCountry]);
+
+  const handleCloseCountryDetail = useCallback(() => {
+    setSelectedCountry(null);
+    setCardStartPosition(null);
+  }, []);
+
+  const handleToggleCountriesList = useCallback(() => {
+    onToggleCountriesList?.();
+  }, [onToggleCountriesList]);
+
+  const handleGlobalProgramClick = useCallback(() => {
+    onGlobalProgramClick?.();
+  }, [onGlobalProgramClick]);
 
   return (
-    <div className="relative w-full h-full overflow-hidden flex flex-col md:flex-row" style={{ maxWidth: '100vw', overflowX: 'hidden' }}>
-      {/* Globe Container - dynamic width based on countries list visibility */}
+    <div
+      className="relative w-full h-full overflow-hidden flex flex-col md:flex-row min-h-[80vh]"
+      style={{ maxWidth: '100vw', overflowX: 'clip' }}
+    >
+      {/* Globe Container */}
       <motion.div
         className="relative flex-1 md:h-full min-w-0"
-        animate={{
-          width: showCountriesList ? (window.innerWidth >= 768 ? '70%' : '100%') : '100%',
-        }}
-        transition={{ duration: 0.5, ease: "easeInOut" }}
+        initial={
+          isMobileDevice()
+            ? {
+              y: '100%',
+              opacity: 0,
+            }
+            : {
+              width: '100%',
+            }
+        }
+        animate={isMobileDevice() ? {
+          y: 0,
+          opacity: 1,
+          height: showCountriesList
+            ? isMobileDevice() ? window.innerHeight - MOBILE_SIDEBAR_HEIGHT : window.innerHeight
+            : window.innerHeight,
+        }
+          : {
+            width: showCountriesList
+              ? window.innerWidth >= TABLET_BREAKPOINT
+                ? '70%'
+                : '100%'
+              : '100%',
+          }}
+        
+        transition={{ duration: 0.5, ease: 'easeInOut' }}
         style={{
           maxWidth: '100%',
           overflow: 'hidden',
           scrollbarColor: 'rgba(0, 217, 255, 0.5) rgba(26, 31, 58, 0.5)',
         }}
       >
-
         {dimensions.width === 0 ? (
           <div className="flex items-center justify-center w-full h-full bg-gradient-to-b from-[#0a0e27] via-[#1a1f3a] to-[#0d1b2a]">
             <Loader2 className="w-12 h-12 text-cyan-400 animate-spin" />
@@ -319,26 +437,9 @@ export function InteractiveGlobe({ countries, onCountryClick, showCountriesList 
           <div
             id="globe-container"
             onMouseMove={handleMouseMove}
-            onClick={(e) => {
-              // Toggle rotation when clicking on globe background (not on countries or UI elements)
-              const target = e.target as HTMLElement;
-              // Check if the click is on the canvas element (the globe itself)
-              if (target.tagName === 'CANVAS' && setIsRotationPaused) {
-                setIsRotationPaused(!isRotationPaused);
-              }
-            }}
-            onMouseEnter={() => {
-              if (onMouseEnter) {
-                onMouseEnter();
-              }
-              setIsHoveringGlobe(true);
-            }}
-            onMouseLeave={() => {
-              if (onMouseLeave) {
-                onMouseLeave();
-              }
-              setIsHoveringGlobe(false);
-            }}
+            onClick={handleGlobeClick}
+            onMouseEnter={handleGlobeMouseEnter}
+            onMouseLeave={handleGlobeMouseLeave}
             className="w-full h-full flex items-center justify-center relative"
             style={{
               minWidth: 0,
@@ -347,14 +448,14 @@ export function InteractiveGlobe({ countries, onCountryClick, showCountriesList 
           >
             {/* Top instruction message */}
             <div className="absolute top-2 sm:top-4 md:top-8 left-1/2 transform -translate-x-1/2 z-10 pointer-events-none px-2 sm:px-4 md:px-0 w-full max-w-[90%] sm:max-w-[80%] md:max-w-none">
-              <p className="text-white text-xs sm:text-sm md:text-base text-center whitespace-normal break-words" style={{ opacity: 0.9 }}>
+              <p className="text-white text-xs sm:text-sm md:text-lg lg:text-xl text-center whitespace-normal break-words" style={{ opacity: 0.9 }}>
                 {COMMON_TRANSLATIONS[languageCode].globeTopInstruction}
               </p>
             </div>
 
             {/* Bottom instruction message */}
             <div className="absolute bottom-2 sm:bottom-4 md:bottom-8 left-1/2 transform -translate-x-1/2 z-10 pointer-events-none px-2 sm:px-4 md:px-0 w-full max-w-[90%] sm:max-w-[80%] md:max-w-none">
-              <p className="text-white text-xs sm:text-sm md:text-base text-center whitespace-normal break-words" style={{ opacity: 0.7 }}>
+              <p className="text-white text-xs sm:text-sm md:text-lg lg:text-xl text-center whitespace-normal break-words" style={{ opacity: 0.7 }}>
                 {COMMON_TRANSLATIONS[languageCode].globeBottomInstruction}
               </p>
             </div>
@@ -414,8 +515,8 @@ export function InteractiveGlobe({ countries, onCountryClick, showCountriesList 
                 onPolygonHover={handleGlobePolygonHover}
                 atmosphereAltitude={0.25}
                 enablePointerInteraction={true}
-                // width={dimensions.width}
-                // height={dimensions.height}
+                width={dimensions.width}
+                height={dimensions.height}
               />
             ) : (
               <div className="flex items-center justify-center w-full h-full bg-gradient-to-b from-[#0a0e27] via-[#1a1f3a] to-[#0d1b2a]">
@@ -481,51 +582,36 @@ export function InteractiveGlobe({ countries, onCountryClick, showCountriesList 
           )}
         </AnimatePresence>
 
-        {/* Animated Country Detail Panel - Slides from sidebar to center */}
+        {/* Country Detail Panel */}
         <CountryDetailPanel
           country={selectedCountry}
           countryColor={selectedCountryColor}
           cardStartPosition={cardStartPosition}
           getTrackData={getTrackData}
-          onClose={() => {
-            setSelectedCountry(null);
-            setCardStartPosition(null);
-          }}
+          onClose={handleCloseCountryDetail}
           onNextStep={handleNextStep}
-          targetAudienceLabel={selectedCountry ? getTargetAudienceLabelForCountry(selectedCountry.id) : undefined}
+          targetAudienceLabel={
+            selectedCountry
+              ? getTargetAudienceLabelForCountry(selectedCountry.id)
+              : undefined
+          }
           isNextStepDisabled={true}
           nextStepButtonText={COMMON_TRANSLATIONS[languageCode].comingSoon}
         />
 
       </motion.div>
-      <div className='absolute top-0 left-0 w-fit p-3 h-10` bg-red-500' onClick={() => {
-        if (onToggleCountriesList) {
-          onToggleCountriesList();
-        }
-      }}>
-        hi there button
-      </div>
 
       {/* Country Cards Sidebar - 30% on desktop, fixed 220px height on mobile */}
       <AnimatePresence>
         {showCountriesList && (
           <motion.div
             key="sidebar"
-            initial={{ width: 0, opacity: 0 }}
-            animate={{
-              width: sidebarWidth,
-              opacity: 1
-            }}
-            exit={{
-              width: 0,
-              opacity: 0,
-              overflow: 'hidden',
-              transition: { delay: 0.3, duration: 0.5, ease: "easeInOut" } // Wait for content to slide out
-            }}
-            transition={{
-              duration: 0.5,
-              ease: "easeInOut"
-            }}
+            initial={isMobileDevice() ? { y: "100%", opacity: 0 } : { width: 0, opacity: 0 }}
+            animate={
+              isMobileDevice() ? { y: 0, opacity: 1 } : { width: sidebarWidth, opacity: 1 }
+            }
+            exit={isMobileDevice() ? { y: "100%", opacity: 0 } : { width: 0, opacity: 0 }}
+            transition={{ duration: 0.5, ease: "easeInOut" }}
             className="relative h-[220px] md:h-full bg-gradient-to-b from-[#0a0e27]/95 to-[#1a1f3a]/95 border-t-2 md:border-t-0 md:border-l-2 border-cyan-400/30 backdrop-blur-lg overflow-hidden flex-shrink-0"
             style={{ minWidth: 0, maxWidth: '100%' }}
           >
@@ -555,14 +641,10 @@ export function InteractiveGlobe({ countries, onCountryClick, showCountriesList 
                   {COMMON_TRANSLATIONS[languageCode].selectACountry}
                 </h2>
                 <motion.button
-                  onClick={() => {
-                    if (onToggleCountriesList) {
-                      onToggleCountriesList();
-                    }
-                  }}
+                  onClick={handleToggleCountriesList}
                   whileHover={{ scale: 1.1, rotate: 90 }}
                   whileTap={{ scale: 0.9 }}
-                  className="p-1.5 rounded-full transition-all duration-300 hover:bg-white/10"
+                  className="p-1.5 rounded-full cursor-pointer transition-all duration-300 hover:bg-white/10"
                   style={{ color: '#00d9ff' }}
                 >
                   <X className="w-5 h-5" />
@@ -594,11 +676,7 @@ export function InteractiveGlobe({ countries, onCountryClick, showCountriesList 
                       borderColor: '#00d9ff40',
                       boxShadow: '0 0 15px #00d9ff40'
                     }}
-                    onClick={() => {
-                      if (onGlobalProgramClick) {
-                        onGlobalProgramClick();
-                      }
-                    }}
+                    onClick={handleGlobalProgramClick}
                   >
                     {/* Vertical layout matching country cards */}
                     <div className="flex flex-col gap-2 md:gap-3 p-2 md:p-3 w-28 md:w-auto md:h-full">
