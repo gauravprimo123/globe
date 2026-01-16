@@ -674,10 +674,10 @@ export function InteractiveGlobe({
                 ease: "easeIn",
                 delay: 0.1 // Slight delay when opening
               }}
-              className="p-3 md:p-6 h-full flex flex-col w-full"
+              className={`${isLandscape ? 'p-2 md:p-4' : 'p-3 md:p-6'} h-full flex flex-col w-full`}
             >
               <motion.div
-                className="flex items-center justify-between mb-3 md:mb-6 flex-shrink-0"
+                className={`flex items-center justify-between${isLandscape ? 'mb-2' : 'mb-3 md:mb-6 '} flex-shrink-0`}
                 initial={{ opacity: 0, x: 50 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.3 }}

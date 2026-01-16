@@ -3,12 +3,14 @@ import { motion, AnimatePresence } from "motion/react";
 import { LANGUAGES } from "@/constants/languages";
 import { Languages } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
+import { useDeviceOrientation } from "@/hooks/useDeviceOrientation";
 
 
 const LanguageSelector = memo(() => {
     const languageDropdownRef = useRef<HTMLDivElement>(null);
     const { language: currentLanguage, setLanguage } = useLanguage();
     const [showLanguageDropdown, setShowLanguageDropdown] = useState(false);
+    const { isLandscape } = useDeviceOrientation();
 
     const selectLanguage = useCallback((code: (typeof LANGUAGES)[number]["code"]) => {
         setLanguage(code);
@@ -99,7 +101,7 @@ const LanguageSelector = memo(() => {
                                 }}
                             >
                                 <div
-                                    className="py-2 max-h-80 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-slate-400/40 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent"
+                                    className=  {`py-2 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-slate-400/40 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent ${isLandscape ? 'max-h-40' : 'max-h-80'}`}
                                     onWheel={(e) => {
                                         // Prevent scroll from propagating to parent elements
                                         e.stopPropagation();
