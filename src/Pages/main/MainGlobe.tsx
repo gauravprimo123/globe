@@ -274,7 +274,7 @@ export default function MainGlobe() {
                                 initial={{ opacity: 0, y: 30, scale: 0.9 }}
                                 animate={{ opacity: 1, y: 0, scale: 1 }}
                                 transition={{ duration: 1, delay: 0.5 }}
-                                className={` mb-6 bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent  ${isLandscape ? 'text-3xl' : 'text-4xl md:text-6xl pb-2'}`}
+                                className={` mb-6 bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent  ${isLandscape && isMobile ? 'text-3xl' : 'text-4xl md:text-6xl pb-2'}`}
                                 style={{
                                     textShadow: '0 0 80px rgba(0, 217, 255, 0.5)',
                                     fontWeight: 700,
@@ -290,7 +290,7 @@ export default function MainGlobe() {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 1, delay: 0.8 }}
-                                className={`text-white/90 max-w-3xl mx-auto ${isLandscape ? 'text-lg mb-4' : 'text-xl md:text-2xl mb-12'}`}
+                                className={`text-white/90 max-w-3xl mx-auto ${isLandscape && isMobile ? 'text-lg mb-4' : 'text-xl md:text-2xl mb-12'}`}
                             >
                                 Connecting expertise, innovation, and real-world solutions to overcome challenges and improve diabetes management across diverse populations.
                             </motion.p>
@@ -305,7 +305,7 @@ export default function MainGlobe() {
                                     animate={{ y: [0, 10, 0] }}
                                     transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                                 >
-                                    <ChevronDown className={`${isLandscape ? 'w-8 h-8' : 'w-12 h-12'} text-cyan-400`} style={{ filter: 'drop-shadow(0 0 10px rgba(0, 217, 255, 0.8))' }} />
+                                    <ChevronDown className={`${isLandscape && isMobile ? 'w-8 h-8' : 'w-12 h-12'} text-cyan-400`} style={{ filter: 'drop-shadow(0 0 10px rgba(0, 217, 255, 0.8))' }} />
                                 </motion.div>
                                 <p className="text-white/60 text-sm">{COMMON_TRANSLATIONS[language].scrollToExplore}</p>
                             </motion.div>

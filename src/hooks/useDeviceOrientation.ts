@@ -2,26 +2,47 @@ import { useState, useEffect } from 'react';
 
 /**
  * Hook to detect mobile device orientation
- * Returns whether the device is in landscape mode
+ * Returns whether the device is in landscape mode (only for mobile devices)
  */
 export function useDeviceOrientation() {
+  // Helper function to detect if device is mobile/tablet
+  const detectMobileDevice = (): boolean => {
+    if (typeof window === 'undefined') return false;
+    
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    
+    // Check for touch capability (more reliable than width alone)
+    const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    
+    // Mobile/tablet detection:
+    // 1. Has touch capability AND
+    // 2. Either width < 1024 (tablet breakpoint) OR height < 600 (typical phone height)
+    // This catches large phones in landscape (like Galaxy S20 Ultra with 915px width)
+    const isMobileDevice = hasTouch && (width < 1024 || height < 600);
+    
+    return isMobileDevice;
+  };
+
+  const [isMobile, setIsMobile] = useState<boolean>(detectMobileDevice);
+
   const [isLandscape, setIsLandscape] = useState<boolean>(() => {
     if (typeof window === 'undefined') return false;
-    return window.innerWidth > window.innerHeight;
-  });
-
-  const [isMobile, setIsMobile] = useState<boolean>(() => {
-    if (typeof window === 'undefined') return false;
-    return window.innerWidth < 768; // TABLET_BREAKPOINT
+    const isMobileDevice = detectMobileDevice();
+    // Only consider landscape if it's a mobile device AND width > height
+    return isMobileDevice && window.innerWidth > window.innerHeight;
   });
 
   useEffect(() => {
     const checkOrientation = () => {
       const width = window.innerWidth;
       const height = window.innerHeight;
+      const isMobileDevice = detectMobileDevice();
       
-      setIsMobile(width < 768);
-      setIsLandscape(width > height);
+      setIsMobile(isMobileDevice);
+      // Only set landscape to true if it's a mobile device in landscape orientation
+      // Desktop screens are typically wider than tall, but we don't want to treat them as "landscape"
+      setIsLandscape(isMobileDevice && width > height);
     };
 
     // Check on mount
