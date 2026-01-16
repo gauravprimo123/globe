@@ -18,6 +18,7 @@ import globalProgramImage from "@/assets/globe-img.png";
 import LanguageSelector from '@/components/common/LanguageSelector';
 import { COUNTRIES } from '@/constants/countries';
 import { useTranslatedCountries } from '@/hooks/useTranslatedCountries';
+import { useDeviceOrientation } from '@/hooks/useDeviceOrientation';
 import { useLanguage } from '@/context/LanguageContext';
 import { GLOBAL_PROGRAM_TRANSLATIONS } from '@/translations/globalProgram';
 import { COMMON_TRANSLATIONS } from '@/translations/commonTranslation';
@@ -43,6 +44,7 @@ export default function MainGlobe() {
     // Get translated countries based on current language
     const translatedCountries = useTranslatedCountries(COUNTRIES);
     const { language } = useLanguage();
+    const { isLandscape, isMobile } = useDeviceOrientation();
 
     // Get translated global program content
     const globalProgramContent = GLOBAL_PROGRAM_TRANSLATIONS[language] || GLOBAL_PROGRAM_TRANSLATIONS.EN;
@@ -141,12 +143,17 @@ export default function MainGlobe() {
         measureElements();
 
         // Measure after a delay to ensure images are loaded
-        setTimeout(measureElements, 500);
-        setTimeout(measureElements, 1000);
+        const timeouts = [
+          setTimeout(measureElements, 500),
+          setTimeout(measureElements, 1000)
+        ];
 
         // Measure on window resize
         window.addEventListener('resize', measureElements);
-        return () => window.removeEventListener('resize', measureElements);
+        return () => {
+          window.removeEventListener('resize', measureElements);
+          timeouts.forEach(clearTimeout);
+        };
     }, []);
 
     // Highlighted countries with vibrant neon colors and information
@@ -155,7 +162,7 @@ export default function MainGlobe() {
     };
 
     return (
-        <div className="relative h-[calc(100vh-100px)] w-full bg-gradient-to-b from-[#0a0e27] via-[#1a1f3a] to-[#0d1b2a]">
+        <div className="relative h-[calc(100vh-80px)] w-full bg-gradient-to-b from-[#0a0e27] via-[#1a1f3a] to-[#0d1b2a]">
 
             {/* Language Selector Dropdown - Bottom Left above Global Program */}
             <LanguageSelector />
@@ -214,7 +221,15 @@ export default function MainGlobe() {
                             duration: 0.4,
                             ease: "easeOut"
                         }}
-                        className="fixed inset-0 z-30 flex items-center justify-center pointer-events-none"
+                        className="fixed inset-0 z-30 flex items-center justify-center"
+                        onClick={(e) => {
+                            // Prevent clicks from passing through to elements below
+                            e.stopPropagation();
+                        }}
+                        onMouseDown={(e) => {
+                            // Prevent mouse events from passing through
+                            e.stopPropagation();
+                        }}
                     >
                         {/* Night Lights Map Background Layer */}
                         <motion.div
@@ -222,7 +237,7 @@ export default function MainGlobe() {
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.95 }}
                             transition={{ duration: 1.5, ease: "easeOut" }}
-                            className="absolute inset-0 overflow-hidden"
+                            className="absolute inset-0 overflow-hidden pointer-events-none"
                         >
                             <div className="absolute inset-0 backdrop-blur-2xl bg-gradient-to-b from-[#0a0e27]/95 via-[#1a1f3a]/90 to-[#0d1b2a]/85" />
                             <ImageWithFallback
@@ -251,7 +266,7 @@ export default function MainGlobe() {
                         </motion.div>
 
                         {/* Content Layer */}
-                        <div className="text-center px-6 relative z-10">
+                        <div className="text-center px-6 relative z-10 pointer-events-none">
                             {/* Spacer to push content to center */}
                             <div style={{ height: 'calc(var(--header-height, 100px))' }} />
 
@@ -284,7 +299,7 @@ export default function MainGlobe() {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 1, delay: 1.1 }}
-                                className="flex flex-col items-center gap-4 pointer-events-auto"
+                                className="flex flex-col items-center gap-4"
                             >
                                 <motion.div
                                     animate={{ y: [0, 10, 0] }}

@@ -538,8 +538,8 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         ancc: '0.5 ANCC contact hours',
       },
       buttonText: {
-        label: 'Coming Soon',
-        href: "#"
+        label: 'Coming soon',
+        href: '#'
       }
     },
     ES: {
@@ -560,8 +560,8 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         ancc: '0.5 horas de contacto ANCC',
       },
       buttonText: {
-        label: 'Coming Soon',
-        href: "https://www.google.com"
+        label: 'Próximamente',
+        href: '#'
       },
     },
     FR: {
@@ -582,8 +582,8 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         ancc: '0.5 heures de contact ANCC',
       },
       buttonText: {
-        label: 'Coming Soon',
-        href: "https://www.google.com"
+        label: 'Bientôt disponible',
+        href: '#'
       },
     },
     DE: {
@@ -604,8 +604,8 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         ancc: '0.5 ANCC Kontaktstunden',
       },
       buttonText: {
-        label: 'Coming Soon',
-        href: "https://www.google.com"
+        label: 'Demnächst',
+        href: '#'
       },
     },
     AR: {
@@ -626,8 +626,8 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         ancc: '0.5 ساعة اتصال ANCC',
       },
       buttonText: {
-        label: 'Coming Soon',
-        href: "https://www.google.com"
+        label: 'قريباً',
+        href: '#'
       },
     },
     ZH: {
@@ -648,8 +648,8 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         ancc: '0.5 ANCC 联系小时',
       },
       buttonText: {
-        label: 'Coming Soon',
-        href: "https://www.google.com"
+        label: '即将推出',
+        href: '#'
       },
     },
     JA: {
@@ -670,8 +670,8 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         ancc: '0.5 ANCC 連絡時間',
       },
       buttonText: {
-        label: 'Coming Soon',
-        href: "https://www.google.com"
+        label: '近日公開',
+        href: '#'
       },
     },
     PT: {
@@ -692,8 +692,8 @@ export const TRACK_DATA_TRANSLATIONS: TrackDataTranslations = {
         ancc: '0.5 horas de contato ANCC',
       },
       buttonText: {
-        label: 'Coming Soon',
-        href: "https://www.google.com"
+        label: 'Em breve',
+        href: '#'
       },
     },
   },

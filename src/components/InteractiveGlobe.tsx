@@ -17,6 +17,7 @@ import { useGlobe } from './GlobeWrapper';
 // Hooks & Utilities
 // ============================================================================
 import { useTranslatedTrackData } from '@/hooks/useTranslatedCountries';
+import { useDeviceOrientation } from '@/hooks/useDeviceOrientation';
 import {
   getTargetAudienceLabel,
   getCountryColorHelper,
@@ -25,6 +26,7 @@ import {
   isMobileDevice,
   scrollToElement,
 } from './InteractiveGlobe/helpers';
+import { debounce, throttle } from '@/utils/debounce';
 
 // ============================================================================
 // Context
@@ -37,6 +39,7 @@ import { useLanguage } from '@/context/LanguageContext';
 import { getCountryPolygons } from '../data/countryBoundaries';
 import { GLOBAL_PROGRAM_TRANSLATIONS } from '@/translations/globalProgram';
 import { COMMON_TRANSLATIONS } from '@/translations/commonTranslation';
+import { COUNTRIES } from '@/constants/countries';
 
 // ============================================================================
 // Assets
@@ -115,6 +118,7 @@ export function InteractiveGlobe({
   const { GlobeComponent, loadError } = useGlobe();
   const { language: languageCode } = useLanguage();
   const getTrackData = useTranslatedTrackData();
+  const { isLandscape, isMobile: isMobileOrientation, orientation } = useDeviceOrientation();
 
   // ============================================================================
   // Helper Functions
@@ -144,6 +148,22 @@ export function InteractiveGlobe({
     return getColor(selectedCountry);
   }, [selectedCountry, getColor]);
 
+  // Memoize sorted countries to avoid re-sorting on every render
+  const sortedCountries = useMemo(() => {
+    const englishNameMap = new Map(
+      COUNTRIES.map(country => [country.id, country.name])
+    );
+    return countries.slice().sort((a, b) => {
+      const nameA = englishNameMap.get(a.id) || a.name;
+      const nameB = englishNameMap.get(b.id) || b.name;
+      return nameA.localeCompare(nameB, 'en');
+    });
+  }, [countries]);
+
+  // Check if device is mobile in portrait mode (sidebar at bottom)
+  const isMobilePortrait = useMemo(() => {
+    return isMobileDevice() && !isLandscape;
+  }, [isLandscape]);
 
   // ============================================================================
   // Effects - Layout & Dimensions
@@ -151,10 +171,11 @@ export function InteractiveGlobe({
   useEffect(() => {
     const updateDimensions = () => {
       const isMobileDevice = window.innerWidth < TABLET_BREAKPOINT;
-      setIsMobile(isMobileDevice);
+      const isMobilePortraitMode = isMobileDevice && !isLandscape;
+      setIsMobile(isMobilePortraitMode);
 
       const mobileGlobeHeight =
-        isMobileDevice && showCountriesList
+        isMobilePortraitMode && showCountriesList
           ? window.innerHeight - MOBILE_SIDEBAR_HEIGHT
           : window.innerHeight;
 
@@ -163,24 +184,28 @@ export function InteractiveGlobe({
         : window.innerWidth;
 
       const newDimensions = {
-        width: isMobileDevice ? window.innerWidth : desktopGlobeWidth,
-        height: isMobileDevice ? mobileGlobeHeight : window.innerHeight,
+        width: isMobilePortraitMode ? window.innerWidth : desktopGlobeWidth,
+        height: isMobilePortraitMode ? mobileGlobeHeight : window.innerHeight,
       };
 
       setSidebarWidth(
-        showCountriesList ? (isMobileDevice ? '100%' : '30%') : '0%'
+        showCountriesList ? (isMobilePortraitMode ? '100%' : '30%') : '0%'
       );
 
       setDimensions(newDimensions);
     };
 
+    // Debounce resize handler to improve performance
+    const debouncedUpdateDimensions = debounce(updateDimensions, 150);
+
     updateDimensions();
-    window.addEventListener('resize', updateDimensions);
+    window.addEventListener('resize', debouncedUpdateDimensions);
 
     return () => {
-      window.removeEventListener('resize', updateDimensions);
+      window.removeEventListener('resize', debouncedUpdateDimensions);
+      debouncedUpdateDimensions.cancel();
     };
-  }, [showCountriesList]);
+  }, [showCountriesList, isLandscape]);
 
   useEffect(() => {
     const countryIds = countries.map((country) => country.id);
@@ -346,8 +371,22 @@ export function InteractiveGlobe({
     []
   );
 
+  // Throttle mouse move to ~60fps for better performance
+  const handleMouseMoveRef = useRef(
+    throttle((e: React.MouseEvent) => {
+      setMousePos({ x: e.clientX, y: e.clientY });
+    }, 16)
+  );
+
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    setMousePos({ x: e.clientX, y: e.clientY });
+    handleMouseMoveRef.current(e);
+  }, []);
+
+  // Cleanup throttle on unmount
+  useEffect(() => {
+    return () => {
+      handleMouseMoveRef.current.cancel();
+    };
   }, []);
 
   const handleGlobeClick = useCallback(
@@ -389,16 +428,56 @@ export function InteractiveGlobe({
     onGlobalProgramClick?.();
   }, [onGlobalProgramClick]);
 
+  // ============================================================================
+  // Memoized Polygon Color Functions - Prevents recreation on every render
+  // ============================================================================
+  const polygonCapColorFn = useCallback((d: any) => {
+    const countryData = d.countryData;
+    if (!countryData) return 'rgba(0, 0, 0, 0)';
+    const isHovered = hoveredCountry?.id === countryData.id;
+    const isSelected = selectedCountry?.id === countryData.id;
+    if (isSelected) {
+      return getColorWithOpacity(countryData, 0.25);
+    }
+    if (isHovered) {
+      return getColorWithOpacity(countryData, 0.15);
+    }
+    return getColorWithOpacity(countryData, 0.08);
+  }, [hoveredCountry, selectedCountry, getColorWithOpacity]);
+
+  const polygonSideColorFn = useCallback((d: any) => {
+    const countryData = d.countryData;
+    if (!countryData) return 'rgba(0, 0, 0, 0)';
+    const isHovered = hoveredCountry?.id === countryData.id;
+    return isHovered
+      ? getColorWithOpacity(countryData, 0.2)
+      : getColorWithOpacity(countryData, 0.1);
+  }, [hoveredCountry, getColorWithOpacity]);
+
+  const polygonStrokeColorFn = useCallback((d: any) => {
+    const countryData = d.countryData;
+    if (!countryData) return 'rgba(100, 200, 255, 0.3)';
+    return getColor(countryData);
+  }, [getColor]);
+
+  const polygonAltitudeFn = useCallback((d: any) => {
+    const isHovered = hoveredCountry?.id === d.countryData?.id;
+    const isSelected = selectedCountry?.id === d.countryData?.id;
+    if (isSelected) return 0.015;
+    if (isHovered) return 0.012;
+    return 0.008;
+  }, [hoveredCountry, selectedCountry]);
+
   return (
     <div
-      className="relative w-full h-full overflow-hidden flex flex-col md:flex-row min-h-[80vh]"
+      className={`relative w-full h-full overflow-hidden flex  md:flex-row ${isLandscape ? 'flex-row' : 'flex-col'}`}
       style={{ maxWidth: '100vw', overflowX: 'clip' }}
     >
       {/* Globe Container */}
       <motion.div
         className="relative flex-1 md:h-full min-w-0"
         initial={
-          isMobileDevice()
+          isMobilePortrait
             ? {
               y: '100%',
               opacity: 0,
@@ -407,11 +486,11 @@ export function InteractiveGlobe({
               width: '100%',
             }
         }
-        animate={isMobileDevice() ? {
+        animate={isMobilePortrait ? {
           y: 0,
           opacity: 1,
           height: showCountriesList
-            ? isMobileDevice() ? window.innerHeight - MOBILE_SIDEBAR_HEIGHT : window.innerHeight
+            ? window.innerHeight - MOBILE_SIDEBAR_HEIGHT
             : window.innerHeight,
         }
           : {
@@ -477,39 +556,10 @@ export function InteractiveGlobe({
                 showAtmosphere={true}
                 atmosphereColor="lightskyblue"
                 polygonsData={polygonData}
-                polygonCapColor={(d: any) => {
-                  const countryData = d.countryData;
-                  if (!countryData) return 'rgba(0, 0, 0, 0)';
-                  const isHovered = hoveredCountry && hoveredCountry.id === countryData.id;
-                  const isSelected = selectedCountry && selectedCountry.id === countryData.id;
-                  if (isSelected) {
-                    return getColorWithOpacity(countryData, 0.25);
-                  }
-                  if (isHovered) {
-                    return getColorWithOpacity(countryData, 0.15);
-                  }
-                  return getColorWithOpacity(countryData, 0.08);
-                }}
-                polygonSideColor={(d: any) => {
-                  const countryData = d.countryData;
-                  if (!countryData) return 'rgba(0, 0, 0, 0)';
-                  const isHovered = hoveredCountry && d.countryData && hoveredCountry.id === d.countryData.id;
-                  return isHovered
-                    ? getColorWithOpacity(countryData, 0.2)
-                    : getColorWithOpacity(countryData, 0.1);
-                }}
-                polygonStrokeColor={(d: any) => {
-                  const countryData = d.countryData;
-                  if (!countryData) return 'rgba(100, 200, 255, 0.3)';
-                  return getColor(countryData);
-                }}
-                polygonAltitude={(d: any) => {
-                  const isHovered = hoveredCountry && d.countryData && hoveredCountry.id === d.countryData.id;
-                  const isSelected = selectedCountry && d.countryData && selectedCountry.id === d.countryData.id;
-                  if (isSelected) return 0.015;
-                  if (isHovered) return 0.012;
-                  return 0.008;
-                }}
+                polygonCapColor={polygonCapColorFn}
+                polygonSideColor={polygonSideColorFn}
+                polygonStrokeColor={polygonStrokeColorFn}
+                polygonAltitude={polygonAltitudeFn}
                 polygonsTransitionDuration={300}
                 onPolygonClick={handleGlobePolygonClick}
                 onPolygonHover={handleGlobePolygonHover}
@@ -606,13 +656,13 @@ export function InteractiveGlobe({
         {showCountriesList && (
           <motion.div
             key="sidebar"
-            initial={isMobileDevice() ? { y: "100%", opacity: 0 } : { width: 0, opacity: 0 }}
+            initial={isMobilePortrait ? { y: "100%", opacity: 0 } : { width: 0, opacity: 0 }}
             animate={
-              isMobileDevice() ? { y: 0, opacity: 1 } : { width: sidebarWidth, opacity: 1 }
+              isMobilePortrait ? { y: 0, opacity: 1 } : { width: sidebarWidth, opacity: 1 }
             }
-            exit={isMobileDevice() ? { y: "100%", opacity: 0 } : { width: 0, opacity: 0 }}
+            exit={isMobilePortrait ? { y: "100%", opacity: 0 } : { width: 0, opacity: 0 }}
             transition={{ duration: 0.5, ease: "easeInOut" }}
-            className="relative h-[220px] md:h-full bg-gradient-to-b from-[#0a0e27]/95 to-[#1a1f3a]/95 border-t-2 md:border-t-0 md:border-l-2 border-cyan-400/30 backdrop-blur-lg overflow-hidden flex-shrink-0"
+            className={`relative ${isMobilePortrait ? 'h-[220px] border-t-2' : 'md:h-full md:border-l-2'} bg-gradient-to-b from-[#0a0e27]/95 to-[#1a1f3a]/95 border-cyan-400/30 backdrop-blur-lg overflow-hidden flex-shrink-0`}
             style={{ minWidth: 0, maxWidth: '100%' }}
           >
             <motion.div
@@ -652,8 +702,8 @@ export function InteractiveGlobe({
               </motion.div>
 
               {/* Horizontal scroll on mobile, 2x4 grid on desktop */}
-              <div className="flex md:grid md:grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 overflow-x-auto md:overflow-x-visible md:overflow-y-auto pb-3 md:pb-0 flex-1 px-3 md:px-2 md:py-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] md:[scrollbar-width:thin]"
-                style={{
+              <div className={`${isMobilePortrait ? 'flex-row overflow-x-auto overflow-y-auto' : 'flex-col overflow-y-auto'} flex md:grid md:grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 pb-3 md:pb-0 flex-1 px-3 md:px-2 md:py-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] md:[scrollbar-width:thin]`}
+                style={{  
                   scrollbarColor: 'rgba(0, 217, 255, 0.5) rgba(26, 31, 58, 0.5)',
                   touchAction: 'pan-x pan-y',
                   WebkitOverflowScrolling: 'touch',
@@ -699,10 +749,7 @@ export function InteractiveGlobe({
                   </Card>
                 </motion.div>
 
-                {countries
-                  .slice()
-                  .sort((a, b) => a.name.localeCompare(b.name))
-                  .map((country, index) => (
+                {sortedCountries.map((country, index) => (
                     <motion.div
                       key={country.id}
                       ref={(el: any) => { cardRefs.current[country.id] = el; }}
