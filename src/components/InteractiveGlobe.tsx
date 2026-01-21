@@ -228,7 +228,113 @@ export function InteractiveGlobe({
   // ============================================================================
   // Effects - Globe Controls
   // ============================================================================
+
+
+
+
+  // ============================================================================
+  // Event Handlers
+  // ============================================================================
+
+  // useEffect(() => {
+  //   if (!globeGlRef.current) return;
+
+  //   const controls = globeGlRef.current.controls?.();
+  //   const canvas = globeGlRef.current.renderer?.domElement;
+  //   if (!controls || !canvas) return;
+
+  //   // Detect touch devices
+  //   const isTouchDevice =
+  //     window.matchMedia('(pointer: coarse)').matches ||
+  //     window.matchMedia('(hover: none)').matches;
+
+  //   // On desktop, disable OrbitControls default zoom
+  //   controls.enableZoom = isTouchDevice; 
+  //   controls.enablePan = false;
+
+  //   // Only handle Ctrl + scroll when hovering (desktop)
+  //   const handleWheel = (e: WheelEvent) => {
+  //     if (!isHoveringGlobe) return;        // only when hovering
+  //     if (isTouchDevice) return;           // skip touch devices
+  //     if (!(e.ctrlKey || e.metaKey)) return; // only Ctrl/Cmd + scroll
+
+  //     e.preventDefault(); // prevent browser zoom
+
+  //     const zoomFactor = e.deltaY < 0 ? 0.95 : 1.05;
+  //     if (e.deltaY < 0) {
+  //       controls.dollyOut(zoomFactor);
+  //     } else {
+  //       controls.dollyIn(zoomFactor);
+  //     }
+  //     controls.update();
+  //   };
+
+  //   canvas.addEventListener('wheel', handleWheel, { passive: false });
+
+  //   return () => {
+  //     canvas.removeEventListener('wheel', handleWheel);
+  //   };
+  // }, [isHoveringGlobe]);
+
+
   useEffect(() => {
+    const handleWheel = (e: WheelEvent) => {
+      // Only handle if hovering over globe and Ctrl key is pressed
+      if (!isHoveringGlobe) return;
+      
+      // Only zoom if Ctrl key (or Cmd on Mac) is pressed
+      if (e.ctrlKey || e.metaKey) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        if (globeGlRef.current && globeGlRef.current.camera) {
+          try {
+            const camera = globeGlRef.current.camera();
+            if (camera && camera.position) {
+              // Calculate zoom factor based on scroll direction
+              const zoomFactor = e.deltaY > 0 ? 1.05 : 0.95;
+              
+              // Apply zoom to camera position
+              camera.position.x *= zoomFactor;
+              camera.position.y *= zoomFactor;
+              camera.position.z *= zoomFactor;
+              
+              // Clamp zoom to reasonable limits
+              const distance = Math.sqrt(
+                camera.position.x ** 2 + 
+                camera.position.y ** 2 + 
+                camera.position.z ** 2
+              );
+              
+              const minDistance = 150;
+              const maxDistance = 800;
+              
+              if (distance < minDistance || distance > maxDistance) {
+                const clampedDistance = Math.max(minDistance, Math.min(maxDistance, distance));
+                const scale = clampedDistance / distance;
+                camera.position.x *= scale;
+                camera.position.y *= scale;
+                camera.position.z *= scale;
+              }
+            }
+          } catch (error) {
+            console.warn('Error zooming globe:', error);
+          }
+        }
+      }
+      // If Ctrl is not pressed, allow normal page scrolling (do nothing)
+    };
+
+    // Attach to window to capture all wheel events
+    window.addEventListener('wheel', handleWheel, { passive: false });
+
+    return () => {
+      window.removeEventListener('wheel', handleWheel);
+    };
+  }, [isHoveringGlobe]);
+
+  useEffect(() => {
+    console.log('<------GlobeComponent------>', GlobeComponent);
     if (!GlobeComponent || !globeGlRef.current) return;
 
     const timer = setTimeout(() => {
@@ -236,8 +342,13 @@ export function InteractiveGlobe({
         const controls = globeGlRef.current?.controls?.();
         if (!controls) return;
 
+        // const isTouchDevice =
+        //   'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
         const isTouchDevice =
-          'ontouchstart' in window || navigator.maxTouchPoints > 0;
+          window.matchMedia('(pointer: coarse)').matches ||
+          window.matchMedia('(hover: none)').matches;
+
         const shouldAutoRotate = !selectedCountry && !isRotationPaused;
 
         controls.autoRotate = shouldAutoRotate;
@@ -246,6 +357,9 @@ export function InteractiveGlobe({
         controls.dampingFactor = 0.05;
         controls.rotateSpeed = 0.5;
         controls.enableZoom = isTouchDevice;
+        // controls.enableZoom = false;
+        // controls.enableZoom = false;
+
         controls.enablePan = false;
       } catch (error) {
         console.warn('Error setting globe controls:', error);
@@ -255,62 +369,8 @@ export function InteractiveGlobe({
     return () => clearTimeout(timer);
   }, [GlobeComponent, selectedCountry, isRotationPaused]);
 
-  useEffect(() => {
-    if (!GlobeComponent || !isHoveringGlobe) return;
+  // console.log('<------isHoveringGlobe------>', isHoveringGlobe);
 
-    const isDesktop = window.innerWidth >= DESKTOP_BREAKPOINT;
-    if (!isDesktop) return;
-
-    const handleWheel = (e: WheelEvent) => {
-      if (!(e.ctrlKey || e.metaKey)) return;
-
-      e.preventDefault();
-      e.stopPropagation();
-
-      if (!globeGlRef.current?.camera) return;
-
-      try {
-        const camera = globeGlRef.current.camera();
-        if (!camera?.position) return;
-
-        const zoomFactor = e.deltaY > 0 ? ZOOM_FACTOR_OUT : ZOOM_FACTOR_IN;
-
-        camera.position.x *= zoomFactor;
-        camera.position.y *= zoomFactor;
-        camera.position.z *= zoomFactor;
-
-        const distance = Math.sqrt(
-          camera.position.x ** 2 +
-          camera.position.y ** 2 +
-          camera.position.z ** 2
-        );
-
-        if (distance < ZOOM_MIN_DISTANCE || distance > ZOOM_MAX_DISTANCE) {
-          const clampedDistance = Math.max(
-            ZOOM_MIN_DISTANCE,
-            Math.min(ZOOM_MAX_DISTANCE, distance)
-          );
-          const scale = clampedDistance / distance;
-
-          camera.position.x *= scale;
-          camera.position.y *= scale;
-          camera.position.z *= scale;
-        }
-      } catch (error) {
-        console.warn('Error zooming globe:', error);
-      }
-    };
-
-    window.addEventListener('wheel', handleWheel, { passive: false });
-
-    return () => {
-      window.removeEventListener('wheel', handleWheel);
-    };
-  }, [GlobeComponent, isHoveringGlobe]);
-
-  // ============================================================================
-  // Event Handlers
-  // ============================================================================
   const handlePolygonClick = useCallback(
     (polygon: any, fromSidebar: boolean = false) => {
       const country = polygon.countryData;
@@ -500,7 +560,7 @@ export function InteractiveGlobe({
                 : '100%'
               : '100%',
           }}
-        
+
         transition={{ duration: 0.5, ease: 'easeInOut' }}
         style={{
           maxWidth: '100%',
@@ -703,7 +763,7 @@ export function InteractiveGlobe({
 
               {/* Horizontal scroll on mobile, 2x4 grid on desktop */}
               <div className={`${isMobilePortrait ? 'flex-row overflow-x-auto overflow-y-auto' : 'flex-col overflow-y-auto'} flex md:grid md:grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 pb-3 md:pb-0 flex-1 px-3 md:px-2 md:py-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] md:[scrollbar-width:thin]`}
-                style={{  
+                style={{
                   scrollbarColor: 'rgba(0, 217, 255, 0.5) rgba(26, 31, 58, 0.5)',
                   touchAction: 'pan-x pan-y',
                   WebkitOverflowScrolling: 'touch',
@@ -750,72 +810,72 @@ export function InteractiveGlobe({
                 </motion.div>
 
                 {sortedCountries.map((country, index) => (
-                    <motion.div
-                      key={country.id}
-                      ref={(el: any) => { cardRefs.current[country.id] = el; }}
-                      initial={{ opacity: 0, x: 50 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.4 + index * 0.05 }}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.98 }}
-                      className="flex-shrink-0 md:flex-shrink h-auto my-1"
+                  <motion.div
+                    key={country.id}
+                    ref={(el: any) => { cardRefs.current[country.id] = el; }}
+                    initial={{ opacity: 0, x: 50 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.4 + index * 0.05 }}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="flex-shrink-0 md:flex-shrink h-auto my-1"
+                  >
+                    <Card
+                      className="cursor-pointer overflow-hidden border-2 transition-all duration-300 bg-gradient-to-br from-[#1a1f3a]/90 to-[#0a0e27]/90 backdrop-blur-sm h-full"
+                      style={{
+                        borderColor: selectedCountry?.id === country.id ? getColor(country) : `${getColor(country)}40`,
+                        boxShadow: selectedCountry?.id === country.id
+                          ? `0 0 30px ${getColor(country)}99, 0 0 60px ${getColor(country)}55`
+                          : `0 0 15px ${getColor(country)}40`
+                      }}
+                      onClick={() => handlePolygonClick({ countryData: country }, true)}
                     >
-                      <Card
-                        className="cursor-pointer overflow-hidden border-2 transition-all duration-300 bg-gradient-to-br from-[#1a1f3a]/90 to-[#0a0e27]/90 backdrop-blur-sm h-full"
-                        style={{
-                          borderColor: selectedCountry?.id === country.id ? getColor(country) : `${getColor(country)}40`,
-                          boxShadow: selectedCountry?.id === country.id
-                            ? `0 0 30px ${getColor(country)}99, 0 0 60px ${getColor(country)}55`
-                            : `0 0 15px ${getColor(country)}40`
-                        }}
-                        onClick={() => handlePolygonClick({ countryData: country }, true)}
-                      >
-                        {/* Vertical layout on both mobile and desktop (image top, text bottom) */}
-                        <div className="flex flex-col gap-2 md:gap-3 p-2 md:p-3 w-28 md:w-auto md:h-full">
-                          <div className="relative w-full h-20 md:h-32 flex-shrink-0 overflow-hidden rounded-lg">
-                            {country.image && (
-                              <>
-                                <ImageWithFallback
-                                  src={country.image}
-                                  alt={country.name}
-                                  className={`w-full h-full object-cover transition-transform duration-300 hover:scale-110 ${country.id === 'china' ? 'object-left' : country.id === 'uae' ? '' : 'object-center'}`}
-                                  style={{
-                                    objectPosition: country.id === 'china'
-                                      ? 'left center'
-                                      : country.id === 'uae'
-                                        ? '20% center'
-                                        : 'center center'
-                                  }}
-                                />
-                                <div
-                                  className="absolute inset-0 bg-gradient-to-t from-[#0a0e27] via-transparent to-transparent opacity-60"
-                                />
-                              </>
-                            )}
-                            {selectedCountry?.id === country.id && (
-                              <motion.div
-                                className="absolute inset-0 border-2"
-                                style={{ borderColor: getColor(country) }}
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
+                      {/* Vertical layout on both mobile and desktop (image top, text bottom) */}
+                      <div className="flex flex-col gap-2 md:gap-3 p-2 md:p-3 w-28 md:w-auto md:h-full">
+                        <div className="relative w-full h-20 md:h-32 flex-shrink-0 overflow-hidden rounded-lg">
+                          {country.image && (
+                            <>
+                              <ImageWithFallback
+                                src={country.image}
+                                alt={country.name}
+                                className={`w-full h-full object-cover transition-transform duration-300 hover:scale-110 ${country.id === 'china' ? 'object-left' : country.id === 'uae' ? '' : 'object-center'}`}
+                                style={{
+                                  objectPosition: country.id === 'china'
+                                    ? 'left center'
+                                    : country.id === 'uae'
+                                      ? '20% center'
+                                      : 'center center'
+                                }}
                               />
-                            )}
-                          </div>
-                          <div className="flex-1 min-w-0 text-center px-1 md:px-2">
-                            <h3
-                              className="text-xs md:text-sm transition-all duration-300 truncate"
-                              style={{
-                                color: selectedCountry?.id === country.id ? getColor(country) : 'white',
-                                textShadow: selectedCountry?.id === country.id ? `0 0 10px ${getColor(country)}` : 'none'
-                              }}
-                            >
-                              {country.name}
-                            </h3>
-                          </div>
+                              <div
+                                className="absolute inset-0 bg-gradient-to-t from-[#0a0e27] via-transparent to-transparent opacity-60"
+                              />
+                            </>
+                          )}
+                          {selectedCountry?.id === country.id && (
+                            <motion.div
+                              className="absolute inset-0 border-2"
+                              style={{ borderColor: getColor(country) }}
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                            />
+                          )}
                         </div>
-                      </Card>
-                    </motion.div>
-                  ))}
+                        <div className="flex-1 min-w-0 text-center px-1 md:px-2">
+                          <h3
+                            className="text-xs md:text-sm transition-all duration-300 truncate"
+                            style={{
+                              color: selectedCountry?.id === country.id ? getColor(country) : 'white',
+                              textShadow: selectedCountry?.id === country.id ? `0 0 10px ${getColor(country)}` : 'none'
+                            }}
+                          >
+                            {country.name}
+                          </h3>
+                        </div>
+                      </div>
+                    </Card>
+                  </motion.div>
+                ))}
               </div>
             </motion.div>
           </motion.div>
